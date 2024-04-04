@@ -28,6 +28,10 @@ const ShowPage = async ({ params }: { params: unknown }) => {
 
     const upsertShowWithId = upsertShow.bind(null, { showId: show.id });
 
+    const firstUncheckedEpisode = show.seasons
+      .map((season) => season.episodes)
+      .flat()
+      .find((episode) => !episode.checked);
     const uncheckedEpisodeIds: number[] = [];
 
     return (
@@ -61,13 +65,13 @@ const ShowPage = async ({ params }: { params: unknown }) => {
             type="single"
             className="space-y-4"
             collapsible
-            defaultValue="season-1"
+            defaultValue={`season-${firstUncheckedEpisode?.seasonId}`}
           >
             {show.seasons.map((season) => (
               <AccordionItem
                 key={season.id}
                 className="border-b-0"
-                value={`season-${season.number}`}
+                value={`season-${season.id}`}
               >
                 <AccordionTrigger className="bg-white bg-opacity-50 rounded-t-lg px-4 font-bold data-[state=closed]:rounded-b-lg">
                   {season.name}
