@@ -10,11 +10,58 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
+model Genre {
+    id   Int     @id
+    name String?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([name])
+    shows Show[]
+}
+
+model Season {
+    id           Int       @id
+    name         String?
+    episodeCount Int?
+    number       Int?
+    poster       String?
+    episodes     Episode[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    show   Show? @relation(fields: [showId], references: [id])
+    showId Int?
+}
+
+model Episode {
+    id       Int       @id
+    airDate  DateTime?
+    name     String?
+    overview String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    season   Season? @relation(fields: [seasonId], references: [id])
+    seasonId Int?
+}
+
+model Show {
+    id               Int      @id
+    name             String?
+    genres           Genre[]
+    inProduction     Boolean?
+    episodeCount     Int?
+    seasonCount      Int?
+    originCountry    String?
+    originalLanguage String?
+    originalName     String?
+    seasons          Season[]
+    status           String?
+    poster           String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
