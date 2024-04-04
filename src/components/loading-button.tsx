@@ -1,11 +1,11 @@
 "use client";
 
+import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import { Loader2Icon } from "lucide-react";
-import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
-const LoadingButton = ({ children }: { children: ReactNode }) => {
+const LoadingButton = ({ children, ...props }: ButtonProps) => {
   const { pending } = useFormStatus();
 
   if (pending) {
@@ -16,6 +16,7 @@ const LoadingButton = ({ children }: { children: ReactNode }) => {
     <Button
       onClick={(event) => pending && event.preventDefault()}
       type="submit"
+      {...props}
     >
       {pending ? <Loader2Icon className="h-4 w-4 animate-spin" /> : children}
     </Button>

@@ -1,4 +1,5 @@
 import { routes } from "@/app/safe-routes";
+import ToggleButton from "@/app/series/[showId]/toggle-button";
 import { upsertShow } from "@/app/series/ajouter/actions";
 import LoadingButton from "@/components/loading-button";
 import {
@@ -17,10 +18,17 @@ const ShowPage = async ({ params }: { params: unknown }) => {
     const { showId } = routes.showSingle.$parseParams(params);
     const show = await db.show.findFirstOrThrow({
       where: { id: showId },
-      include: { seasons: { include: { episodes: true } } },
+      include: {
+        seasons: {
+          include: { episodes: { orderBy: { number: "asc" } } },
+          orderBy: { number: "asc" },
+        },
+      },
     });
 
     const upsertShowWithId = upsertShow.bind(null, { showId: show.id });
+
+    const uncheckedEpisodeIds: number[] = [];
 
     return (
       <div className="max-w-3xl w-full space-y-4">
@@ -49,28 +57,54 @@ const ShowPage = async ({ params }: { params: unknown }) => {
           </div>
         </div>
         <div>
-          <Accordion type="single" collapsible defaultValue="season-1">
+          <Accordion
+            type="single"
+            className="space-y-4"
+            collapsible
+            defaultValue="season-1"
+          >
             {show.seasons.map((season) => (
               <AccordionItem
                 key={season.id}
                 className="border-b-0"
                 value={`season-${season.number}`}
               >
-                <AccordionTrigger className="bg-white bg-opacity-50 rounded-t-lg px-4 font-bold">
+                <AccordionTrigger className="bg-white bg-opacity-50 rounded-t-lg px-4 font-bold data-[state=closed]:rounded-b-lg">
                   {season.name}
                 </AccordionTrigger>
                 <AccordionContent className="bg-white bg-opacity-25 pb-0 rounded-b-lg divide-y">
-                  {season.episodes.map((episode) => (
-                    <div key={episode.id} className="p-4">
-                      <p className="font-semibold">
-                        {episode.number} - {episode.name}{" "}
-                        <span className="font-normal">
-                          ({episode.airDate?.toLocaleDateString(["fr"])})
-                        </span>
-                      </p>
-                      <p>{episode.overview}</p>
-                    </div>
-                  ))}
+                  {season.episodes.map((episode) => {
+                    if (!episode.checked) {
+                      uncheckedEpisodeIds.push(episode.id);
+                    }
+
+                    return (
+                      <div
+                        key={episode.id}
+                        className="p-4 flex flex-row items-center"
+                      >
+                        <div className="w-full">
+                          <p className="font-semibold">
+                            {episode.number} - {episode.name}{" "}
+                            <span className="font-normal">
+                              ({episode.airDate?.toLocaleDateString(["fr"])})
+                            </span>
+                          </p>
+                          <p>{episode.overview}</p>
+                        </div>
+                        <div className="flex-0 w-10 items-center">
+                          <ToggleButton
+                            checked={episode.checked ?? false}
+                            episodeId={episode.id}
+                            previousUnchecked={uncheckedEpisodeIds.some(
+                              (id) => id < episode.id,
+                            )}
+                            showId={show.id}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </AccordionContent>
               </AccordionItem>
             ))}
