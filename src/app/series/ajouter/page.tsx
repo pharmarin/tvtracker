@@ -1,11 +1,10 @@
 "use client";
 
 import { searchShow, upsertShow } from "@/app/series/ajouter/actions";
-import { Loader2Icon } from "lucide-react";
+import LoadingButton from "@/components/loading-button";
 import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
 import { useEffect } from "react";
-import { useFormStatus } from "react-dom";
 
 const AddShowPage = () => {
   const { execute, result } = useAction(searchShow);
@@ -25,7 +24,7 @@ const AddShowPage = () => {
         className="flex w-full flex-row items-center justify-center gap-4"
       >
         <input name="query" />
-        <SearchButton />
+        <LoadingButton>Chercher</LoadingButton>
       </form>
       <div className="space-y-4 max-w-3xl">
         {result.data?.map((result) => {
@@ -33,7 +32,7 @@ const AddShowPage = () => {
             return null;
           }
 
-          const addShowWithId = upsertShow.bind(null, { showId: result.id });
+          const upsertShowWithId = upsertShow.bind(null, { showId: result.id });
 
           return (
             <div
@@ -54,8 +53,8 @@ const AddShowPage = () => {
                 <div className="text-purple-200">{result.overview}</div>
               </div>
               {result.id && (
-                <form action={addShowWithId}>
-                  <AddShowButton />
+                <form action={upsertShowWithId}>
+                  <LoadingButton>Ajouter à mes séries</LoadingButton>
                 </form>
               )}
             </div>
@@ -63,44 +62,6 @@ const AddShowPage = () => {
         })}
       </div>
     </div>
-  );
-};
-
-const SearchButton = () => {
-  const { pending } = useFormStatus();
-
-  if (pending) {
-    return;
-  }
-
-  return (
-    <button
-      onClick={(event) => pending && event.preventDefault()}
-      type="submit"
-    >
-      {pending ? <Loader2Icon className="h-4 w-4 animate-spin" /> : "Chercher"}
-    </button>
-  );
-};
-
-const AddShowButton = () => {
-  const { pending } = useFormStatus();
-
-  if (pending) {
-    return;
-  }
-
-  return (
-    <button
-      onClick={(event) => pending && event.preventDefault()}
-      type="submit"
-    >
-      {pending ? (
-        <Loader2Icon className="h-4 w-4 animate-spin" />
-      ) : (
-        "Ajouter à mes séries"
-      )}
-    </button>
   );
 };
 

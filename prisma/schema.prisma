@@ -37,9 +37,10 @@ model Season {
 
 model Episode {
     id       Int       @id
-    airDate  DateTime?
+    number   Int?
     name     String?
     overview String?
+    airDate  DateTime?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -52,10 +53,9 @@ model Show {
     id               Int      @id
     name             String?
     genres           Genre[]
-    inProduction     Boolean?
     episodeCount     Int?
     seasonCount      Int?
-    originCountry    String?
+    originalCountry  String?
     originalLanguage String?
     originalName     String?
     seasons          Season[]

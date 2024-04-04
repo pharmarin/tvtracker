@@ -1,9 +1,11 @@
 "use server";
 
-import tmdb from "@/app/tmdb";
+import { routes } from "@/app/safe-routes";
 import { db } from "@/server/db";
 import { action } from "@/server/safe-action";
+import tmdb from "@/server/tmdb";
 import type { Genre, SimpleEpisode } from "moviedb-promise";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -20,7 +22,7 @@ export const searchShow = action(
 export const upsertShow = action(
   z.object({ showId: z.number() }),
   async ({ showId }) => {
-    const show = await tmdb.tvInfo({ id: showId });
+    const show = await tmdb.tvInfo({ id: showId, language: "fr" });
 
     if (!show.id) {
       throw new Error("Cette série n'existe pas. ");
@@ -40,35 +42,15 @@ export const upsertShow = action(
             create: genre,
           })),
       },
-      inProduction: show.in_production,
       episodeCount: show.number_of_episodes,
       seasonCount: show.number_of_seasons,
-      originCountry: show.origin_country
+      originalCountry: show.origin_country
         ? JSON.stringify(show.origin_country)
         : undefined,
       originalLanguage: show.original_language,
       originalName: show.original_name,
       status: show.status,
       poster: show.poster_path,
-      /* seasons: {
-          connectOrCreate: (show.seasons ?? [])
-            .filter(
-              (season): season is SimpleSeason & { id: number; name: string } =>
-                Boolean(season.id) && Boolean(season.name),
-            )
-            .map((season) => ({
-              where: {
-                id: season.id,
-              },
-              create: {
-                id: season.id,
-                name: season.name,
-                number: season.season_number,
-                episodeCount: season.episode_count,
-                poster: season.poster_path,
-              },
-            })),
-        }, */
     };
 
     await db.show.upsert({
@@ -82,31 +64,42 @@ export const upsertShow = action(
         const seasonInfo = await tmdb.seasonInfo({
           id: show.id,
           season_number: season.season_number,
+          language: "fr",
         });
+
+        const episodes = await db.$transaction(
+          (seasonInfo.episodes ?? [])
+            .filter((episode): episode is SimpleEpisode & { id: number } =>
+              Boolean(episode.id),
+            )
+            .map((episode) => {
+              const episodeData = {
+                id: episode.id,
+                name: episode.name,
+                number: episode.episode_number,
+                overview: episode.overview,
+                airDate: episode.air_date
+                  ? new Date(episode.air_date)
+                  : undefined,
+              };
+
+              return db.episode.upsert({
+                where: { id: episode.id },
+                create: episodeData,
+                update: episodeData,
+              });
+            }),
+        );
 
         const seasonData = {
           id: season.id,
+          name: season.name,
           episodeCount: season.episode_count,
           number: season.season_number,
           poster: season.poster_path,
           showId: show.id,
           episodes: {
-            connectOrCreate: (seasonInfo.episodes ?? [])
-              .filter(
-                (
-                  episode,
-                ): episode is SimpleEpisode & { id: number; name: string } =>
-                  Boolean(episode.id) && Boolean(episode.name),
-              )
-              .map((episode) => ({
-                where: { id: episode.id },
-                create: {
-                  id: episode.id,
-                  name: episode.name,
-                  overview: episode.overview,
-                  airDate: episode.air_date,
-                },
-              })),
+            connect: episodes.map((episode) => ({ id: episode.id })),
           },
         };
 
@@ -116,6 +109,9 @@ export const upsertShow = action(
           update: seasonData,
         });
       }
+
+      revalidatePath(routes.home());
+      revalidatePath(routes.showSingle({ showId: show.id }));
     }
   },
 );
