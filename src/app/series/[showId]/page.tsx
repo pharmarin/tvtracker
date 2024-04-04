@@ -1,4 +1,5 @@
 import { routes } from "@/app/safe-routes";
+import DeleteButton from "@/app/series/[showId]/delete-button";
 import ToggleButton from "@/app/series/[showId]/toggle-button";
 import { upsertShow } from "@/app/series/ajouter/actions";
 import LoadingButton from "@/components/loading-button";
@@ -55,9 +56,12 @@ const ShowPage = async ({ params }: { params: unknown }) => {
                 (JSON.parse(show.originalCountry) as string[])?.join(", ")}{" "}
               ({show.originalLanguage})
             </p>
-            <form className="mt-4" action={upsertShowWithId}>
-              <LoadingButton>Mettre à jour</LoadingButton>
-            </form>
+            <div className="flex space-x-4 mt-4">
+              <form action={upsertShowWithId}>
+                <LoadingButton>Mettre à jour</LoadingButton>
+              </form>
+              <DeleteButton showId={show.id} showName={show.name ?? ""} />
+            </div>
           </div>
         </div>
         <div>

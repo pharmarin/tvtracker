@@ -4,6 +4,7 @@ import { routes } from "@/app/safe-routes";
 import { db } from "@/server/db";
 import { action } from "@/server/safe-action";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export const setCheckedEpisode = action(
@@ -45,5 +46,14 @@ export const setCheckedEpisode = action(
     }
 
     revalidatePath(routes.showSingle({ showId }));
+  },
+);
+
+export const deleteShow = action(
+  z.object({ showId: z.number() }),
+  async ({ showId }) => {
+    await db.show.delete({ where: { id: showId } });
+
+    redirect(routes.home());
   },
 );
