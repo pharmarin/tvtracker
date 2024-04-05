@@ -18,10 +18,14 @@ export const switchShowStatus = (status: string | null) => {
   switch (status) {
     case "Ended":
       return "Terminé";
+    case "Canceled":
+      return "Annulé";
     case "In Production":
       return "En production";
     case "Planned":
       return "Planifié";
+    case "Returning Series":
+      return "Suite attendue";
     case "Post Production":
       return "En post-production";
     case "Released":

@@ -42,7 +42,7 @@ model Episode {
     overview String?
     airDate  DateTime?
 
-    checked Boolean?
+    checked Boolean @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
