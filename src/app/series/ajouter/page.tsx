@@ -4,18 +4,9 @@ import { searchShow, upsertShow } from "@/app/series/ajouter/actions";
 import LoadingButton from "@/components/loading-button";
 import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
-import { useEffect } from "react";
 
 const AddShowPage = () => {
   const { execute, result } = useAction(searchShow);
-
-  useEffect(() => {
-    const formData = new FormData();
-    formData.append("query", "the idol");
-
-    execute(formData);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="space-y-4">
