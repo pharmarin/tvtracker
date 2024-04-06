@@ -19,6 +19,9 @@ const HomePage = async () => {
       seasonCount: true,
       episodeCount: true,
     },
+    orderBy: {
+      createdAt: "asc",
+    },
   });
   const terminatedShows = await db.show.findMany({
     where: {
@@ -36,6 +39,7 @@ const HomePage = async () => {
       seasonCount: true,
       episodeCount: true,
     },
+    orderBy: { name: "asc" },
   });
 
   return (
