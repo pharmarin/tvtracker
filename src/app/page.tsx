@@ -67,7 +67,6 @@ const ShowGrid = ({
     "id" | "name" | "status" | "poster" | "seasonCount" | "episodeCount"
   >[];
 }) => {
-  console.log("count show: ", shows.length);
   return (
     <div className="grid grid-cols-5 gap-4 max-w-3xl">
       {shows.map(async (show) => {
