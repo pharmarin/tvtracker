@@ -49,11 +49,19 @@ const HomePage = async () => {
           <h2 className="font-semibold text-3xl mb-4">Mes séries</h2>
           <Link href={routes.showAdd()}>Ajouter</Link>
         </div>
-        <ShowGrid shows={currentShows} />
+        {currentShows.length > 0 ? (
+          <ShowGrid shows={currentShows} />
+        ) : (
+          <div className="italic">Pas de série ajoutée</div>
+        )}
       </div>
       <div>
         <h3 className="font-semibold text-2xl mb-4">Séries terminées</h3>
-        <ShowGrid shows={terminatedShows} />
+        {terminatedShows ? (
+          <ShowGrid shows={terminatedShows} />
+        ) : (
+          <div className="italic">Pas de série terminée</div>
+        )}
       </div>
     </div>
   );
@@ -68,7 +76,7 @@ const ShowGrid = ({
   >[];
 }) => {
   return (
-    <div className="grid grid-cols-5 gap-4 max-w-3xl">
+    <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 max-w-3xl">
       {shows.map(async (show) => {
         const toWatchEpisode = await db.episode.findFirst({
           where: { season: { show: { id: show.id } }, checked: false },
@@ -92,20 +100,21 @@ const ShowGrid = ({
                 height={500}
                 width={500}
               />
-              <div className="absolute bottom-4 left-0 right-0 flex justify-center flex-col">
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center flex-col text-center">
                 {toWatchEpisode?.number && (
-                  <Badge className="mx-auto mb-2">
+                  <Badge className="mx-4 mb-2">
                     S{toWatchEpisode?.season?.number} E{toWatchEpisode?.number}
                   </Badge>
                 )}
-                <Badge className="mx-auto mb-2">
+                <Badge className="mx-4 mb-2 w-fit">
                   {switchShowStatus(show.status)}
                 </Badge>
               </div>
             </div>
-            <div className="font-bold text-center">{show.name}</div>
-            <div className="text-sm text-center italic">
-              {show.seasonCount} saisons/{show.episodeCount} épisodes
+            <div className="font-bold text-center truncate">{show.name}</div>
+            <div className="flex flex-col text-xs text-center italic text-opacity-50">
+              <div>{show.seasonCount} saisons</div>
+              <div>{show.episodeCount} épisodes</div>
             </div>
           </Link>
         );
