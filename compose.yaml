@@ -1,0 +1,11 @@
+services:
+  tvtracker:
+    container_name: tvtracker
+    build:
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./prisma/database:/app/prisma/database
+    ports:
+      - 3008:3000
+    env_file:
+      - ./.env
