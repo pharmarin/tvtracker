@@ -10,7 +10,8 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "docker": "git pull && docker compose up -d --build"
   },
   "dependencies": {
     "@prisma/client": "^5.10.2",
