@@ -94,14 +94,16 @@ const ShowPage = async ({ params }: { params: unknown }) => {
                         key={episode.id}
                         className="p-4 flex flex-row items-center"
                       >
-                        <div className="w-full">
+                        <div className="w-full flex-initial">
                           <p className="font-semibold">
                             {episode.number} - {episode.name}{" "}
                             <span className="font-normal">
                               ({episode.airDate?.toLocaleDateString(["fr"])})
                             </span>
                           </p>
-                          <p>{episode.overview}</p>
+                          <p className="line-clamp-1 sm:line-clamp-none hover:line-clamp-none">
+                            {episode.overview}
+                          </p>
                         </div>
                         <div className="flex-0 w-10 items-center">
                           <ToggleButton
