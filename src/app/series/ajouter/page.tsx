@@ -2,6 +2,8 @@
 
 import { searchShow, upsertShow } from "@/app/series/ajouter/actions";
 import LoadingButton from "@/components/loading-button";
+import { Input } from "@/components/ui/input";
+import { PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
 
@@ -14,7 +16,7 @@ const AddShowPage = () => {
         action={execute}
         className="flex w-full flex-row items-center justify-center gap-4"
       >
-        <input name="query" />
+        <Input name="query" placeholder="Rechercher une série" />
         <LoadingButton>Chercher</LoadingButton>
       </form>
       <div className="space-y-4 max-w-3xl">
@@ -32,22 +34,27 @@ const AddShowPage = () => {
             >
               <Image
                 alt={`${result.name} poster`}
-                className="w-24"
+                className="w-24 h-fit"
                 src={`https://image.tmdb.org/t/p/w500${result.poster_path}`}
                 height={500}
                 width={500}
               />
               <div className="flex-1 flex-col">
-                <div className="text-xl font-bold text-white">
-                  {result.name}
+                <div className="text-xl font-bold text-white flex items-start justify-between">
+                  <div>{result.name}</div>
+                  {result.id && (
+                    <form action={upsertShowWithId}>
+                      <LoadingButton>
+                        <PlusIcon className="inline sm:hidden" />
+                        <span className="hidden sm:inline">
+                          Ajouter à mes séries
+                        </span>
+                      </LoadingButton>
+                    </form>
+                  )}
                 </div>
                 <div className="text-purple-200">{result.overview}</div>
               </div>
-              {result.id && (
-                <form action={upsertShowWithId}>
-                  <LoadingButton>Ajouter à mes séries</LoadingButton>
-                </form>
-              )}
             </div>
           );
         })}
