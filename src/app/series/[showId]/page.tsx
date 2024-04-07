@@ -40,7 +40,7 @@ const ShowPage = async ({ params }: { params: unknown }) => {
         <div className="flex flex-row space-x-4">
           <Image
             alt={`${show.name} poster`}
-            className="rounded-lg w-48"
+            className="rounded-lg w-48 max-w-[33%]"
             src={`https://image.tmdb.org/t/p/w500${show.poster}`}
             height={500}
             width={500}
@@ -56,9 +56,9 @@ const ShowPage = async ({ params }: { params: unknown }) => {
                 (JSON.parse(show.originalCountry) as string[])?.join(", ")}{" "}
               ({show.originalLanguage})
             </p>
-            <div className="flex space-x-4 mt-4">
+            <div className="flex mt-4 flex-col gap-2 md:flex-row">
               <form action={upsertShowWithId}>
-                <LoadingButton>Mettre à jour</LoadingButton>
+                <LoadingButton className="w-full">Mettre à jour</LoadingButton>
               </form>
               <DeleteButton showId={show.id} showName={show.name ?? ""} />
             </div>
@@ -66,10 +66,13 @@ const ShowPage = async ({ params }: { params: unknown }) => {
         </div>
         <div>
           <Accordion
-            type="single"
+            type="multiple"
             className="space-y-4"
-            collapsible
-            defaultValue={`season-${firstUncheckedEpisode?.seasonId}`}
+            defaultValue={
+              firstUncheckedEpisode
+                ? [`season-${firstUncheckedEpisode?.seasonId}`]
+                : show.seasons.map((season) => `season-${season.id}`)
+            }
           >
             {show.seasons.map((season) => (
               <AccordionItem

@@ -21,9 +21,9 @@ export default function RootLayout({
     <html lang="fr">
       <body className={`font-sans ${inter.variable}`}>
         <div className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-          <div className="container mt-12 flex flex-col items-center justify-center gap-4 py-8">
+          <div className="container mt-4 flex flex-col items-center justify-center gap-4 p-4">
             <Link href="/">
-              <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] pb-4">
                 <span className="text-pink-400">TV</span> Tracker
               </h1>
             </Link>
