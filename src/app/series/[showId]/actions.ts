@@ -46,6 +46,7 @@ export const setCheckedEpisode = action(
     }
 
     revalidatePath(routes.showSingle({ showId }));
+    revalidatePath(routes.home());
   },
 );
 
