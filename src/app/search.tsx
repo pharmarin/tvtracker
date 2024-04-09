@@ -1,13 +1,18 @@
 "use client";
 
 import { search, upsertMovie, upsertShow } from "@/app/actions";
+import { routes } from "@/app/safe-routes";
 import LoadingButton from "@/components/loading-button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const Search = ({ viewedIds }: { viewedIds: number[] }) => {
+  const router = useRouter();
+
   const { execute, result } = useAction(search);
 
   return (
@@ -31,6 +36,7 @@ const Search = ({ viewedIds }: { viewedIds: number[] }) => {
           }
 
           const isShow = result.media_type === "tv";
+          const isAdded = viewedIds.includes(result.id);
 
           const upsertWithId = isShow
             ? upsertShow.bind(null, { showId: result.id })
@@ -62,16 +68,30 @@ const Search = ({ viewedIds }: { viewedIds: number[] }) => {
                       {isShow ? "Série" : "Film"}
                     </div>
                   </div>
-                  {result.id && !(viewedIds ?? []).includes(result.id) && (
-                    <form action={upsertWithId}>
-                      <LoadingButton>
-                        <PlusIcon className="inline sm:hidden" />
-                        <span className="hidden sm:inline">
-                          Ajouter à mes {isShow ? "séries" : "films"}
-                        </span>
-                      </LoadingButton>
-                    </form>
-                  )}
+                  {result.id &&
+                    (isAdded ? (
+                      <Button
+                        onClick={() =>
+                          result.id &&
+                          router.push(
+                            isShow
+                              ? routes.showSingle({ showId: result.id })
+                              : routes.movieSingle({ movieId: result.id }),
+                          )
+                        }
+                      >
+                        Détails
+                      </Button>
+                    ) : (
+                      <form action={upsertWithId}>
+                        <LoadingButton>
+                          <PlusIcon className="inline sm:hidden" />
+                          <span className="hidden sm:inline">
+                            Ajouter à mes {isShow ? "séries" : "films"}
+                          </span>
+                        </LoadingButton>
+                      </form>
+                    ))}
                 </div>
                 <div className="text-purple-200">{result.overview}</div>
               </div>
