@@ -1,7 +1,7 @@
+import { upsertShow } from "@/app/actions";
 import { routes } from "@/app/safe-routes";
 import DeleteButton from "@/app/series/[showId]/delete-button";
 import ToggleButton from "@/app/series/[showId]/toggle-button";
-import { upsertShow } from "@/app/series/ajouter/actions";
 import LoadingButton from "@/components/loading-button";
 import {
   Accordion,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/accordion";
 import { db } from "@/server/db";
 import { switchShowStatus } from "@/server/tmdb";
+import { RefreshCcwIcon } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -58,7 +59,9 @@ const ShowPage = async ({ params }: { params: unknown }) => {
             </p>
             <div className="flex mt-4 flex-col gap-2 md:flex-row">
               <form action={upsertShowWithId}>
-                <LoadingButton className="w-full">Mettre à jour</LoadingButton>
+                <LoadingButton className="w-full space-x-2">
+                  <RefreshCcwIcon /> <span>Mettre à jour</span>
+                </LoadingButton>
               </form>
               <DeleteButton showId={show.id} showName={show.name ?? ""} />
             </div>

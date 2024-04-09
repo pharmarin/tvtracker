@@ -17,7 +17,9 @@ model Genre {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    shows Show[]
+    shows   Show[]
+    movie   Movie? @relation(fields: [movieId], references: [id])
+    movieId Int?
 }
 
 model Season {
@@ -63,6 +65,22 @@ model Show {
     seasons          Season[]
     status           String?
     poster           String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Movie {
+    id               Int       @id
+    title            String?
+    genres           Genre[]
+    originalLanguage String?
+    originalTitle    String?
+    overview         String?
+    releaseDate      DateTime?
+    poster           String?
+
+    checked Boolean @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
