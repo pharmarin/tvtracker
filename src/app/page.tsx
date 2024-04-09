@@ -43,7 +43,7 @@ const HomePage = async () => {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-screen-md">
       <div>
         <div className="flex justify-between">
           <h2 className="font-semibold text-3xl mb-4">Mes séries</h2>
@@ -77,49 +77,60 @@ const ShowGrid = ({
 }) => {
   return (
     <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 max-w-3xl">
-      {shows.map(async (show) => {
-        const toWatchEpisode = await db.episode.findFirst({
-          where: { season: { show: { id: show.id } }, checked: false },
-          orderBy: [{ season: { number: "asc" } }, { number: "asc" }],
-          select: { number: true, season: { select: { number: true } } },
-        });
-
-        return (
-          <Link
-            key={show.id}
-            className="flex justify-top flex-col"
-            href={routes.showSingle({
-              showId: show.id,
-            })}
-          >
-            <div className="relative">
-              <Image
-                alt={`${show.name} poster`}
-                className="rounded-lg"
-                src={`https://image.tmdb.org/t/p/w500${show.poster}`}
-                height={500}
-                width={500}
-              />
-              <div className="absolute bottom-4 left-0 right-0 flex items-center flex-col text-center">
-                {toWatchEpisode?.number && (
-                  <Badge className="mx-4 mb-2" variant="secondary">
-                    S{toWatchEpisode?.season?.number} E{toWatchEpisode?.number}
-                  </Badge>
-                )}
-                <Badge className="mx-4 mb-2 w-fit">
-                  {switchShowStatus(show.status)}
-                </Badge>
-              </div>
-            </div>
-            <div className="font-bold text-center truncate">{show.name}</div>
-            <div className="flex flex-col text-xs text-center italic text-opacity-50">
-              <div>{show.seasonCount} saisons</div>
-              <div>{show.episodeCount} épisodes</div>
-            </div>
-          </Link>
-        );
-      })}
+      {shows.map(async (show) => (
+        <ShowPoster key={show.id} show={show} />
+      ))}
     </div>
+  );
+};
+
+const ShowPoster = async ({
+  show,
+}: {
+  show: Pick<
+    Show,
+    "id" | "name" | "status" | "poster" | "seasonCount" | "episodeCount"
+  >;
+}) => {
+  const toWatchEpisode = await db.episode.findFirst({
+    where: { season: { show: { id: show.id } }, checked: false },
+    orderBy: [{ season: { number: "asc" } }, { number: "asc" }],
+    select: { number: true, season: { select: { number: true } } },
+  });
+
+  return (
+    <Link
+      key={show.id}
+      className="flex justify-top flex-col"
+      href={routes.showSingle({
+        showId: show.id,
+      })}
+    >
+      <div className="relative">
+        <Image
+          alt={`${show.name} poster`}
+          className="rounded-lg"
+          src={`https://image.tmdb.org/t/p/w500${show.poster}`}
+          height={500}
+          width={500}
+        />
+        <div className="absolute bottom-4 left-0 right-0 flex items-center flex-col text-center">
+          {toWatchEpisode?.number && (
+            <Badge className="mx-4 mb-2" variant="secondary">
+              S{toWatchEpisode?.season?.number} E{toWatchEpisode?.number}
+            </Badge>
+          )}
+          <Badge className="mx-4 mb-2 w-fit">
+            {switchShowStatus(show.status)}
+          </Badge>
+        </div>
+      </div>
+      <div className="font-bold text-center truncate">{show.name}</div>
+      <div className="flex flex-col text-xs text-center italic text-opacity-50">
+        <div>{show.seasonCount} saisons</div>
+        <div>{show.episodeCount} épisodes</div>
+      </div>
+    </Link>
   );
 };
 
