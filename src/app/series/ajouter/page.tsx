@@ -16,7 +16,12 @@ const AddShowPage = () => {
         action={execute}
         className="flex w-full flex-row items-center justify-center gap-4"
       >
-        <Input name="query" placeholder="Rechercher une série" />
+        <Input
+          className="text-[16px]"
+          name="query"
+          placeholder="Rechercher une série"
+          type="search"
+        />
         <LoadingButton>Chercher</LoadingButton>
       </form>
       <div className="space-y-4 max-w-3xl">
