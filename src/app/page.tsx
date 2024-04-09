@@ -100,9 +100,9 @@ const ShowGrid = ({
                 height={500}
                 width={500}
               />
-              <div className="absolute bottom-4 left-0 right-0 flex justify-center flex-col text-center">
+              <div className="absolute bottom-4 left-0 right-0 flex items-center flex-col text-center">
                 {toWatchEpisode?.number && (
-                  <Badge className="mx-4 mb-2">
+                  <Badge className="mx-4 mb-2" variant="secondary">
                     S{toWatchEpisode?.season?.number} E{toWatchEpisode?.number}
                   </Badge>
                 )}
