@@ -2,13 +2,22 @@
 
 import { search, upsertMovie, upsertShow } from "@/app/actions";
 import { routes } from "@/app/safe-routes";
-import LoadingButton from "@/components/loading-button";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { PlusIcon } from "lucide-react";
-import { useAction } from "next-safe-action/hooks";
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandShortcut,
+} from "@/components/ui/command";
+import { useAsyncAction } from "@/lib/use-async-hook";
+import { CommandLoading } from "cmdk";
+import { debounce } from "lodash-es";
+import { ArrowRight, Loader2Icon, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 
 const Search = ({
   movieIds,
@@ -18,94 +27,208 @@ const Search = ({
   showIds: number[];
 }) => {
   const router = useRouter();
+  const [addingShows, setAddingShows] = useState<number[]>([]);
+  const [addingMovies, setAddingMovies] = useState<number[]>([]);
+  const [{ data, isLoading: isSearching }, execute] = useAsyncAction(search);
 
-  const { execute, result } = useAction(search);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const executeDebounced = useCallback(debounce(execute, 1000), []);
 
   return (
-    <div className="space-y-4">
-      <form
-        action={execute}
-        className="flex w-full flex-row items-center justify-center gap-4"
-      >
-        <Input
-          className="text-[16px]"
-          name="query"
-          placeholder="Rechercher un média"
-          type="search"
-        />
-        <LoadingButton>Chercher</LoadingButton>
-      </form>
-      <div className="space-y-4 max-w-3xl">
-        {result.data?.map((result) => {
-          if (!result.id || result.media_type === "person") {
-            return null;
-          }
-
-          const isShow = result.media_type === "tv";
-          const isAdded = (isShow ? showIds : movieIds).includes(result.id);
-
-          const upsertWithId = isShow
-            ? upsertShow.bind(null, { showId: result.id })
-            : upsertMovie.bind(null, { movieId: result.id });
-
-          const title = isShow ? result.name : result.title;
-
-          return (
-            <div
-              key={result.id}
-              className="flex flex-row gap-4 rounded-lg bg-white bg-opacity-30 p-4"
-            >
-              <Image
-                alt={`${title} poster`}
-                className="w-24 h-fit"
-                src={
-                  result.poster_path
-                    ? `https://image.tmdb.org/t/p/w500${result.poster_path}`
-                    : ""
+    <CommandDialog open={true} onOpenChange={() => true} shouldFilter={false}>
+      <CommandInput
+        onValueChange={(value) => executeDebounced({ query: value })}
+        placeholder="Recherchez une série ou un film..."
+      />
+      <CommandList>
+        {isSearching && (
+          <CommandLoading className="flex items-center justify-center text-sm mt-4">
+            Chargement en cours...
+          </CommandLoading>
+        )}
+        <CommandEmpty>Aucun résultat.</CommandEmpty>
+        {data?.myShows && data.myShows.length > 0 && (
+          <CommandGroup heading="Mes séries">
+            {data.myShows.map((show) => (
+              <CommandItem
+                key={show.id}
+                onSelect={() =>
+                  router.push(
+                    routes.showSingle({
+                      showId: show.id,
+                    }),
+                  )
                 }
-                height={500}
-                width={500}
-              />
-              <div className="flex-1 flex-col">
-                <div className="text-xl font-bold text-white flex items-start justify-between">
-                  <div>
-                    <div>{title}</div>
-                    <div className="text-sm italic text-opacity-50">
-                      {isShow ? "Série" : "Film"}
-                    </div>
-                  </div>
-                  {result.id &&
-                    (isAdded ? (
-                      <Button
-                        onClick={() =>
-                          result.id &&
-                          router.push(
-                            isShow
-                              ? routes.showSingle({ showId: result.id })
-                              : routes.movieSingle({ movieId: result.id }),
-                          )
-                        }
-                      >
-                        Détails
-                      </Button>
+                value={`${show.id}`}
+              >
+                <Image
+                  alt={`${show.name} poster`}
+                  className="w-12 h-fit mr-4"
+                  src={
+                    show.poster
+                      ? `https://image.tmdb.org/t/p/w500${show.poster}`
+                      : ""
+                  }
+                  height={500}
+                  width={500}
+                />
+                <span className="font-bold">{show.name}</span>
+                <CommandShortcut>
+                  <ArrowRight />
+                </CommandShortcut>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+        {data?.myMovies && data.myMovies.length > 0 && (
+          <CommandGroup heading="Mes films">
+            {data.myMovies.map((movie) => (
+              <CommandItem
+                key={movie.id}
+                onSelect={() =>
+                  router.push(
+                    routes.movieSingle({
+                      movieId: movie.id,
+                    }),
+                  )
+                }
+                value={`${movie.id}`}
+              >
+                <Image
+                  alt={`${movie.title} poster`}
+                  className="w-12 h-fit mr-4"
+                  src={
+                    movie.poster
+                      ? `https://image.tmdb.org/t/p/w500${movie.poster}`
+                      : ""
+                  }
+                  height={500}
+                  width={500}
+                />
+                <span className="font-bold">{movie.title}</span>
+                <CommandShortcut>
+                  <ArrowRight />
+                </CommandShortcut>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+        {data?.tmdbShows && data.tmdbShows.length > 0 && (
+          <CommandGroup heading="Séries TMDB">
+            {data.tmdbShows.map((show) => {
+              if (!show.id) {
+                return null;
+              }
+
+              const isAdding = addingShows.includes(show.id);
+              const isAdded = showIds.includes(show.id);
+
+              return (
+                <CommandItem
+                  key={show.id}
+                  disabled={isAdding}
+                  onSelect={async () => {
+                    if (isAdding) {
+                      return;
+                    }
+                    if (isAdded) {
+                      router.push(routes.showSingle({ showId: show.id ?? 0 }));
+                    } else {
+                      setAddingShows((state) => [...state, show.id ?? 0]);
+                      await upsertShow({ showId: show.id ?? 0 });
+                      setAddingShows((state) => [
+                        ...state.filter((adding) => adding !== show.id),
+                      ]);
+                    }
+                  }}
+                  value={`${show.id}`}
+                >
+                  <Image
+                    alt={`${show.name} poster`}
+                    className="w-12 h-fit mr-4"
+                    src={
+                      show.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
+                        : ""
+                    }
+                    height={500}
+                    width={500}
+                  />
+                  <span className="font-bold">{show.name}</span>
+                  <CommandShortcut>
+                    {isAdding ? (
+                      <Loader2Icon className="animate-spin" />
+                    ) : showIds.includes(show.id) ? (
+                      <ArrowRight />
                     ) : (
-                      <form action={upsertWithId}>
-                        <LoadingButton>
-                          <PlusIcon className="inline sm:hidden" />
-                          <span className="hidden sm:inline">
-                            Ajouter à mes {isShow ? "séries" : "films"}
-                          </span>
-                        </LoadingButton>
-                      </form>
-                    ))}
-                </div>
-                <div className="text-purple-200">{result.overview}</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+                      <PlusIcon />
+                    )}
+                  </CommandShortcut>
+                </CommandItem>
+              );
+            })}
+          </CommandGroup>
+        )}
+        {data?.tmdbMovies && data.tmdbMovies.length > 0 && (
+          <CommandGroup heading="Films TMDB">
+            {data.tmdbMovies.map((movie) => {
+              if (!movie.id) {
+                return null;
+              }
+
+              const isAdding = addingMovies.includes(movie.id);
+              const isAdded = movieIds.includes(movie.id);
+
+              return (
+                <CommandItem
+                  key={movie.id}
+                  disabled={isAdding}
+                  onSelect={async () => {
+                    if (isAdding) {
+                      return;
+                    }
+                    if (isAdded) {
+                      router.push(
+                        routes.movieSingle({ movieId: movie.id ?? 0 }),
+                      );
+                    } else {
+                      setAddingMovies((state) => [...state, movie.id ?? 0]);
+                      await upsertMovie({ movieId: movie.id ?? 0 });
+                      setAddingMovies((state) => [
+                        ...state.filter((adding) => adding !== movie.id),
+                      ]);
+                    }
+                  }}
+                  value={`${movie.id}`}
+                >
+                  <Image
+                    alt={`${movie.title} poster`}
+                    className="w-12 h-fit mr-4"
+                    src={
+                      movie.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                        : ""
+                    }
+                    height={500}
+                    width={500}
+                  />
+                  <span className="font-bold">{movie.title}</span>
+                  <CommandShortcut>
+                    {isAdding ? (
+                      <Loader2Icon className="animate-spin" />
+                    ) : movieIds.includes(movie.id) ? (
+                      <ArrowRight />
+                    ) : (
+                      <PlusIcon />
+                    )}
+                  </CommandShortcut>
+                </CommandItem>
+              );
+            })}
+          </CommandGroup>
+        )}
+      </CommandList>
+    </CommandDialog>
   );
 };
 
