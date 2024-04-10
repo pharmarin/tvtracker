@@ -1,5 +1,6 @@
 import { upsertShow } from "@/app/actions";
 import { routes } from "@/app/safe-routes";
+import { setDropShow } from "@/app/series/[showId]/actions";
 import DeleteButton from "@/app/series/[showId]/delete-button";
 import ToggleButton from "@/app/series/[showId]/toggle-button";
 import LoadingButton from "@/components/loading-button";
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/accordion";
 import { db } from "@/server/db";
 import { switchShowStatus } from "@/server/tmdb";
-import { RefreshCcwIcon } from "lucide-react";
+import { HandIcon, HandshakeIcon, RefreshCcwIcon } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -29,6 +30,10 @@ const ShowPage = async ({ params }: { params: unknown }) => {
     });
 
     const upsertShowWithId = upsertShow.bind(null, { showId: show.id });
+    const setDropShowWithId = setDropShow.bind(null, {
+      showId: show.id,
+      dropped: show.dropped ?? false,
+    });
 
     const firstUncheckedEpisode = show.seasons
       .map((season) => season.episodes)
@@ -61,6 +66,19 @@ const ShowPage = async ({ params }: { params: unknown }) => {
               <form action={upsertShowWithId}>
                 <LoadingButton className="w-full space-x-2">
                   <RefreshCcwIcon /> <span>Mettre à jour</span>
+                </LoadingButton>
+              </form>
+              <form action={setDropShowWithId}>
+                <LoadingButton className="w-full space-x-2">
+                  {show.dropped ? (
+                    <>
+                      <HandshakeIcon /> <span>Reprendre</span>
+                    </>
+                  ) : (
+                    <>
+                      <HandIcon /> <span>Abandonner</span>
+                    </>
+                  )}
                 </LoadingButton>
               </form>
               <DeleteButton showId={show.id} showName={show.name ?? ""} />

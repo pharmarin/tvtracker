@@ -63,3 +63,17 @@ export const deleteShow = action(
     redirect(routes.home());
   },
 );
+
+export const setDropShow = action(
+  z.object({ showId: z.number(), dropped: z.boolean() }),
+  async ({ dropped, showId }) => {
+    await db.show.update({
+      where: { id: showId },
+      data: { dropped: !dropped },
+    });
+
+    revalidatePath(routes.home());
+
+    redirect(routes.home());
+  },
+);

@@ -17,6 +17,7 @@ const ShowHome = async () => {
           },
         },
       },
+      OR: [{ dropped: { equals: false } }, { dropped: { equals: null } }],
     },
     select: {
       id: true,
@@ -44,6 +45,7 @@ const ShowHome = async () => {
           },
         },
       },
+      OR: [{ dropped: { equals: false } }, { dropped: { equals: null } }],
     },
   });
   const terminatedShows = await db.show.findMany({
@@ -53,6 +55,7 @@ const ShowHome = async () => {
           episodes: { every: { checked: { equals: true } } },
         },
       },
+      OR: [{ dropped: { equals: false } }, { dropped: { equals: null } }],
     },
     select: {
       id: true,
@@ -63,6 +66,9 @@ const ShowHome = async () => {
       episodeCount: true,
     },
     orderBy: { name: "asc" },
+  });
+  const droppedShows = await db.show.findMany({
+    where: { dropped: { equals: true } },
   });
 
   return (
@@ -79,30 +85,36 @@ const ShowHome = async () => {
           <div className="italic">Pas de série ajoutée</div>
         )}
       </div>
-      <div>
-        <h3 className="font-semibold text-2xl mb-4">Séries à venir</h3>
-        {toComeShow ? (
+      {toComeShow.length > 0 && (
+        <div>
+          <h3 className="font-semibold text-2xl mb-4">Séries à venir</h3>
           <Grid>
             {toComeShow.map(async (show) => (
               <ShowPoster key={show.id} show={show} />
             ))}
           </Grid>
-        ) : (
-          <div className="italic">Pas de série à venir</div>
-        )}
-      </div>
-      <div>
-        <h3 className="font-semibold text-2xl mb-4">Séries terminées</h3>
-        {terminatedShows ? (
+        </div>
+      )}
+      {terminatedShows.length > 0 && (
+        <div>
+          <h3 className="font-semibold text-2xl mb-4">Séries terminées</h3>
           <Grid>
             {terminatedShows.map(async (show) => (
               <ShowPoster key={show.id} show={show} />
             ))}
           </Grid>
-        ) : (
-          <div className="italic">Pas de série terminée</div>
-        )}
-      </div>
+        </div>
+      )}
+      {droppedShows.length > 0 && (
+        <div>
+          <h3 className="font-semibold text-2xl mb-4">Séries abandonnées</h3>
+          <Grid>
+            {droppedShows.map(async (show) => (
+              <ShowPoster key={show.id} show={show} />
+            ))}
+          </Grid>
+        </div>
+      )}
     </div>
   );
 };

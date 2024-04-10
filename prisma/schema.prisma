@@ -66,6 +66,8 @@ model Show {
     status           String?
     poster           String?
 
+    dropped Boolean?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
