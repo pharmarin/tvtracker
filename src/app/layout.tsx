@@ -38,7 +38,7 @@ export default async function RootLayout({
                 <HomeIcon />
               </Link>
               <Link href={routes.home()}>
-                <h1 className="text-xl font-extrabold tracking-tight sm:text-3xl">
+                <h1 className="text-lg font-extrabold tracking-tight sm:text-3xl mx-4 text-center">
                   Ce que <span className="text-pink-400">Marion et Marin</span>{" "}
                   ont regardé
                 </h1>
