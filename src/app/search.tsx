@@ -10,7 +10,13 @@ import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const Search = ({ viewedIds }: { viewedIds: number[] }) => {
+const Search = ({
+  movieIds,
+  showIds,
+}: {
+  movieIds: number[];
+  showIds: number[];
+}) => {
   const router = useRouter();
 
   const { execute, result } = useAction(search);
@@ -36,7 +42,7 @@ const Search = ({ viewedIds }: { viewedIds: number[] }) => {
           }
 
           const isShow = result.media_type === "tv";
-          const isAdded = viewedIds.includes(result.id);
+          const isAdded = (isShow ? showIds : movieIds).includes(result.id);
 
           const upsertWithId = isShow
             ? upsertShow.bind(null, { showId: result.id })
