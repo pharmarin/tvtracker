@@ -32,7 +32,10 @@ export const setCheckedEpisode = action(
               number: { lte: episodeInfos.number ?? 0 },
             },
             {
-              season: { number: { lt: episodeInfos.season?.number ?? 0 } },
+              season: {
+                number: { lt: episodeInfos.season?.number ?? 0 },
+                showId,
+              },
             },
           ],
         },
