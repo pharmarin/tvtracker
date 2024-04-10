@@ -88,7 +88,7 @@ const ShowHome = async () => {
       {toComeShow.length > 0 && (
         <div>
           <h3 className="font-semibold text-2xl mb-4">Séries à venir</h3>
-          <Grid>
+          <Grid className="grid-cols-4 sm:grid-cols-6">
             {toComeShow.map(async (show) => (
               <ShowPoster key={show.id} show={show} />
             ))}
@@ -98,7 +98,7 @@ const ShowHome = async () => {
       {terminatedShows.length > 0 && (
         <div>
           <h3 className="font-semibold text-2xl mb-4">Séries terminées</h3>
-          <Grid>
+          <Grid className="grid-cols-4 sm:grid-cols-6">
             {terminatedShows.map(async (show) => (
               <ShowPoster key={show.id} show={show} />
             ))}
@@ -108,7 +108,7 @@ const ShowHome = async () => {
       {droppedShows.length > 0 && (
         <div>
           <h3 className="font-semibold text-2xl mb-4">Séries abandonnées</h3>
-          <Grid>
+          <Grid className="grid-cols-5 sm:grid-cols-7">
             {droppedShows.map(async (show) => (
               <ShowPoster key={show.id} show={show} />
             ))}
