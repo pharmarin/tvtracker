@@ -12,6 +12,8 @@ export const deleteMovie = action(
   async ({ movieId }) => {
     await db.movie.delete({ where: { id: movieId } });
 
+    revalidatePath(routes.home());
+
     redirect(routes.home());
   },
 );

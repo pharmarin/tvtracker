@@ -55,6 +55,8 @@ export const deleteShow = action(
   async ({ showId }) => {
     await db.show.delete({ where: { id: showId } });
 
+    revalidatePath(routes.home());
+
     redirect(routes.home());
   },
 );
