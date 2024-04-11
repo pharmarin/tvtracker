@@ -1,6 +1,5 @@
 import { routes } from "@/app/safe-routes";
-import { updateShow } from "@/app/series/utils";
-import { db } from "@/server/db";
+import { refreshShow } from "@/app/series/utils";
 import type { NextRequest } from "next/server";
 
 export const GET = async (request: NextRequest) => {
@@ -18,23 +17,7 @@ export const GET = async (request: NextRequest) => {
   }
 
   if (job === "REFRESH_SHOWS") {
-    const show = await db.show.findFirst({
-      orderBy: { id: "asc" },
-      take: 1,
-      skip: skip ?? 0,
-      select: { id: true, name: true, episodeCount: true, seasonCount: true },
-    });
-
-    if (!show) {
-      return new Response("Job done");
-    }
-
-    const updated = await updateShow(show);
-    console.log(
-      updated
-        ? `Mise à jour de : ${show.name}`
-        : `Série déjà à jour : ${show.name}`,
-    );
+    await refreshShow(skip);
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 

@@ -138,3 +138,23 @@ export const updateShow = async (
     return false;
   }
 };
+
+export const refreshShow = async (skip = 0) => {
+  const show = await db.show.findFirst({
+    orderBy: { id: "asc" },
+    take: 1,
+    skip,
+    select: { id: true, name: true, episodeCount: true, seasonCount: true },
+  });
+
+  if (!show) {
+    return true;
+  }
+
+  const updated = await updateShow(show);
+  console.log(
+    updated
+      ? `Mise à jour de : ${show.name}`
+      : `Série déjà à jour : ${show.name}`,
+  );
+};
