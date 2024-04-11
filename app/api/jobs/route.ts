@@ -36,6 +36,8 @@ export const GET = async (request: NextRequest) => {
         : `Série déjà à jour : ${show.name}`,
     );
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     void fetch(
       `${url.protocol}//${url.host}${routes.jobs({ search: { job: "REFRESH_SHOWS", skip: (skip ?? 0) + 1 } })}`,
     );
