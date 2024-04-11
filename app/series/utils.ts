@@ -47,7 +47,6 @@ const tmdbSeasonToPrisma = (
 ): Prisma.SeasonCreateInput => ({
   id: season.id,
   name: season.name,
-  episodeCount: season.episode_count,
   number: season.season_number,
   poster: season.poster_path,
   show: { connect: { id: showId } },
