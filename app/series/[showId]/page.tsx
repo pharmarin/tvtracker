@@ -1,4 +1,4 @@
-import { upsertShow } from "app/actions";
+import { updateShowAction } from "@/app/series/actions";
 import { routes } from "app/safe-routes";
 import { setDropShow } from "app/series/[showId]/actions";
 import DeleteButton from "app/series/[showId]/delete-button";
@@ -29,7 +29,7 @@ const ShowPage = async ({ params }: { params: unknown }) => {
       },
     });
 
-    const upsertShowWithId = upsertShow.bind(null, { showId: show.id });
+    const upsertShowWithId = updateShowAction.bind(null, { showId: show.id });
     const setDropShowWithId = setDropShow.bind(null, {
       showId: show.id,
       dropped: show.dropped ?? false,

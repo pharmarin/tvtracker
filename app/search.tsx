@@ -1,6 +1,7 @@
 "use client";
 
-import { search as searchAction, upsertMovie, upsertShow } from "app/actions";
+import { createShowAction } from "@/app/series/actions";
+import { search as searchAction, upsertMovie } from "app/actions";
 import { routes } from "app/safe-routes";
 import { CommandLoading } from "cmdk";
 import { Button } from "components/ui/button";
@@ -153,7 +154,7 @@ const Search = ({
                       }
                       if (!isAdded) {
                         setAddingShows((state) => [...state, show.id ?? 0]);
-                        await upsertShow({ showId: show.id ?? 0 });
+                        await createShowAction({ showId: show.id ?? 0 });
                         setAddingShows((state) => [
                           ...state.filter((adding) => adding !== show.id),
                         ]);

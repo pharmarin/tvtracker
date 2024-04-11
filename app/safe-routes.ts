@@ -14,4 +14,10 @@ export const { routes, useSafeParams, useSafeSearchParams } =
         movieId: z.coerce.number(),
       }),
     }),
+    jobs: defineRoute("/api/jobs", {
+      search: z.object({
+        job: z.literal("REFRESH_SHOWS").optional(),
+        skip: z.coerce.number().optional(),
+      }),
+    }),
   }));

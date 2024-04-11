@@ -23,12 +23,11 @@ model Genre {
 }
 
 model Season {
-    id           Int       @id
-    name         String?
-    episodeCount Int?
-    number       Int?
-    poster       String?
-    episodes     Episode[]
+    id       Int       @id
+    name     String?
+    number   Int?
+    poster   String?
+    episodes Episode[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
