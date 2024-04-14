@@ -16,6 +16,7 @@ const MovieHome = async () => {
     where: {
       checked: { equals: false },
     },
+    orderBy: { createdAt: "desc" },
   });
 
   return (

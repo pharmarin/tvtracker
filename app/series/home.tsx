@@ -28,6 +28,7 @@ const ShowHome = async () => {
       episodeCount: true,
     },
     orderBy: {
+      updatedAt: "desc",
       createdAt: "asc",
     },
   });
