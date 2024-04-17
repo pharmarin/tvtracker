@@ -27,10 +27,11 @@ const ShowHome = async () => {
       seasonCount: true,
       episodeCount: true,
     },
-    orderBy: {
+    orderBy: [{
       updatedAt: "desc",
+    }, {
       createdAt: "asc",
-    },
+    }],
   });
   const toComeShow = await db.show.findMany({
     where: {
