@@ -12,12 +12,16 @@ const BooksHome = async () => {
   const currentUserCookie = cookies().get(CURRENT_USER_COOKIE);
   const currentUser = getCurrentUser(currentUserCookie?.value);
 
-  const readBooks = await db.book.findMany({
-    where: {
-      [getUserColumn(currentUser.user)]: true,
+  const readBooksByAuthor = await db.bookAuthor.findMany({
+    orderBy: { name: "asc" },
+    include: {
+      books: {
+        where: {
+          [getUserColumn(currentUser.user)]: true,
+        },
+        include: { authors: true },
+      },
     },
-    orderBy: { createdAt: "desc" },
-    include: { authors: true },
   });
   const toReadBooks = await db.book.findMany({
     where: {
@@ -41,14 +45,19 @@ const BooksHome = async () => {
           <div className="italic">Pas de livre ajouté</div>
         )}
       </div>
-      {readBooks.length > 0 && (
+      {readBooksByAuthor.length > 0 && (
         <div>
           <h2 className="font-semibold text-3xl mb-4">Livres lus</h2>
-          <Grid>
-            {readBooks.map((book) => (
-              <BookPoster key={book.id} book={book} checked={true} />
-            ))}
-          </Grid>
+          {readBooksByAuthor.map((author) => (
+            <div key={author.id} className="mb-4">
+              <h3 className="italic text-xl mb-2">{author.name}</h3>
+              <Grid>
+                {author.books.map((book) => (
+                  <BookPoster key={book.id} book={book} checked={true} />
+                ))}
+              </Grid>
+            </div>
+          ))}
         </div>
       )}
     </div>

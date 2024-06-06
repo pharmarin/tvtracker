@@ -68,13 +68,12 @@ export const createShow = async (tmdbShowId: number) => {
   const show = await tmdb.tvInfo({ id: tmdbShowId, language: "fr" });
   const data = await tmdbShowToPrisma(show);
   const { id } = await db.show.create({ data });
-  await upsertSeasonsAndEpisodes(id, show.id ?? 0, show.seasons);
+  await upsertSeasonsAndEpisodes(show.id ?? 0, show.seasons);
 
   return id;
 };
 
 export const upsertSeasonsAndEpisodes = async (
-  showId: string,
   tmdbShowId: number,
   seasons?: SimpleSeason[],
 ) => {
@@ -86,6 +85,10 @@ export const upsertSeasonsAndEpisodes = async (
   for (const season of seasons.filter(
     (season): season is SimpleSeason & { id: number } => Boolean(season.id),
   )) {
+    if (season.name === "Épisodes spéciaux") {
+      continue;
+    }
+
     const seasonInfo = await tmdb.seasonInfo({
       id: tmdbShowId,
       season_number: season.season_number ?? 0,
@@ -135,11 +138,7 @@ export const updateShow = async (
     currentShow.episodeCount !== tmdbShow.number_of_episodes ||
     currentShow.seasonCount !== tmdbShow.number_of_seasons
   ) {
-    await upsertSeasonsAndEpisodes(
-      currentShow.id,
-      currentShow.tmdbId,
-      tmdbShow.seasons,
-    );
+    await upsertSeasonsAndEpisodes(currentShow.tmdbId, tmdbShow.seasons);
     return true;
   } else {
     return false;
