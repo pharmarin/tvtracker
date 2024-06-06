@@ -16,12 +16,16 @@ export const getCurrentUser = (currentUser: string | undefined) => {
       return {
         user: Users.Marion,
         initials: "MB",
-      };
+        checkedColumn: "checked_marion",
+        plannedColumn: "planned_marion",
+      } as const;
     case Users.Marin:
     default:
       return {
         user: Users.Marin,
         initials: "MR",
-      };
+        checkedColumn: "checked_marin",
+        plannedColumn: "planned_marin",
+      } as const;
   }
 };

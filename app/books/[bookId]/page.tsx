@@ -1,11 +1,20 @@
-import { setCheckedBookAction, updateBook } from "@/app/books/[bookId]/actions";
+import {
+  setCheckedBookAction,
+  setPlannedBookAction,
+  updateBook,
+} from "@/app/books/[bookId]/actions";
 import DeleteButton from "@/app/books/[bookId]/delete-button";
-import { getUserColumn } from "@/app/books/utils";
 import { routes } from "@/app/safe-routes";
 import { CURRENT_USER_COOKIE, getCurrentUser } from "@/app/utils";
 import LoadingButton from "@/components/loading-button";
 import { db } from "@/server/db";
-import { CheckCircle2Icon, RefreshCcwIcon, XCircleIcon } from "lucide-react";
+import {
+  CheckCircle2Icon,
+  HandIcon,
+  HandshakeIcon,
+  RefreshCcwIcon,
+  XCircleIcon,
+} from "lucide-react";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -22,13 +31,18 @@ const page = async ({ params }: { params: unknown }) => {
     const currentUserCookie = cookies().get(CURRENT_USER_COOKIE);
     const currentUser = getCurrentUser(currentUserCookie?.value);
 
-    const bookChecked = book[getUserColumn(currentUser.user)];
+    const bookChecked = book[currentUser.checkedColumn];
 
     const updateBookWithId = updateBook.bind(null, { gapiId: book.gapiId });
     const setCheckedBookActionWithData = setCheckedBookAction.bind(null, {
       bookId: book.id,
       checked: bookChecked,
-      column: getUserColumn(currentUser.user),
+      column: currentUser.checkedColumn,
+    });
+    const setPlannedBookActionWithData = setPlannedBookAction.bind(null, {
+      bookId: book.id,
+      checked: bookChecked,
+      column: currentUser.plannedColumn,
     });
 
     return (
@@ -61,6 +75,19 @@ const page = async ({ params }: { params: unknown }) => {
               </p>
             )}
             <div className="flex mt-4 flex-col gap-2 md:flex-row">
+              <form action={setPlannedBookActionWithData}>
+                <LoadingButton className="w-full space-x-2">
+                  {book[currentUser.plannedColumn] ? (
+                    <>
+                      <HandIcon /> <span>Supprimer des envies</span>
+                    </>
+                  ) : (
+                    <>
+                      <HandshakeIcon /> <span>Ajouter aux envies</span>
+                    </>
+                  )}
+                </LoadingButton>
+              </form>
               <form action={setCheckedBookActionWithData}>
                 <LoadingButton className="w-full space-x-2">
                   {bookChecked ? (

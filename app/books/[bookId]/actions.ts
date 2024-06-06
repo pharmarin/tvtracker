@@ -50,3 +50,20 @@ export const setCheckedBookAction = action(
     revalidatePath(routes.home());
   },
 );
+
+export const setPlannedBookAction = action(
+  z.object({
+    checked: z.boolean(),
+    bookId: z.string().cuid(),
+    column: z.union([z.literal("planned_marin"), z.literal("planned_marion")]),
+  }),
+  async ({ checked, bookId, column }) => {
+    await db.book.update({
+      where: { id: bookId },
+      data: { [column]: !checked },
+    });
+
+    revalidatePath(routes.bookSingle({ bookId }));
+    revalidatePath(routes.home());
+  },
+);

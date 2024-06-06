@@ -1,8 +1,9 @@
-import { Users } from "@/app/utils";
+import { CURRENT_USER_COOKIE, getCurrentUser } from "@/app/utils";
 import { db } from "@/server/db";
 import type { books_v1 } from "@googleapis/books";
 import { books } from "@googleapis/books";
 import type { Prisma } from "@prisma/client";
+import { cookies } from "next/headers";
 
 export const googleBookToPrisma = (
   book: books_v1.Schema$Volume,
@@ -40,15 +41,13 @@ export const createBook = async (bookId: string) => {
   const book = await books("v1").volumes.get({ volumeId: bookId });
   const data = googleBookToPrisma(book.data);
 
-  return await db.book.create({ data });
-};
+  const currentUserCookie = cookies().get(CURRENT_USER_COOKIE);
+  const currentUser = getCurrentUser(currentUserCookie?.value);
 
-export const getUserColumn = (user: Users) => {
-  switch (user) {
-    case Users.Marion:
-      return "checked_marion";
-    case Users.Marin:
-    default:
-      return "checked_marin";
-  }
+  return await db.book.create({
+    data: {
+      ...data,
+      [currentUser.plannedColumn]: true,
+    },
+  });
 };
