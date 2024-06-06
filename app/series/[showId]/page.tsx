@@ -39,7 +39,7 @@ const ShowPage = async ({ params }: { params: unknown }) => {
       .map((season) => season.episodes)
       .flat()
       .find((episode) => !episode.checked);
-    const uncheckedEpisodeIds: number[] = [];
+    const uncheckedEpisodeIds: string[] = [];
 
     return (
       <div className="max-w-3xl w-full space-y-4">

@@ -1,6 +1,6 @@
-import { setCheckedMovie } from "@/app/films/[movieId]/actions";
+import { setCheckedMovieAction } from "@/app/films/[movieId]/actions";
 import DeleteButton from "@/app/films/[movieId]/delete-button";
-import { upsertMovie } from "@/app/films/actions";
+import { updateMovieAction } from "@/app/films/actions";
 import { routes } from "@/app/safe-routes";
 import LoadingButton from "@/components/loading-button";
 import { db } from "@/server/db";
@@ -13,8 +13,10 @@ const MoviePage = async ({ params }: { params: unknown }) => {
     const { movieId } = routes.movieSingle.$parseParams(params);
     const movie = await db.movie.findFirstOrThrow({ where: { id: movieId } });
 
-    const upsertMovieWithId = upsertMovie.bind(null, { movieId: movie.id });
-    const setCheckedMovieWithId = setCheckedMovie.bind(null, {
+    const updateMovieActionWithId = updateMovieAction.bind(null, {
+      tmdbMovieId: movie.tmdbId,
+    });
+    const setCheckedMovieActionWithId = setCheckedMovieAction.bind(null, {
       checked: movie.checked,
       movieId: movie.id,
     });
@@ -37,7 +39,7 @@ const MoviePage = async ({ params }: { params: unknown }) => {
               {movie.originalTitle})
             </p>
             <div className="flex mt-4 flex-col gap-2 md:flex-row">
-              <form action={setCheckedMovieWithId}>
+              <form action={setCheckedMovieActionWithId}>
                 <LoadingButton className="w-full space-x-2">
                   {movie.checked ? (
                     <>
@@ -52,7 +54,7 @@ const MoviePage = async ({ params }: { params: unknown }) => {
                   )}
                 </LoadingButton>
               </form>
-              <form action={upsertMovieWithId}>
+              <form action={updateMovieActionWithId}>
                 <LoadingButton className="w-full space-x-2">
                   <RefreshCcwIcon /> <span>Mettre à jour</span>
                 </LoadingButton>

@@ -10,7 +10,7 @@ const DeleteButton = ({
   showId,
 }: {
   showName: string;
-  showId: number;
+  showId: string;
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 

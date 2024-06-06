@@ -6,12 +6,12 @@ export const { routes, useSafeParams, useSafeSearchParams } =
     home: defineRoute("/"),
     showSingle: defineRoute("/series/[showId]", {
       params: z.object({
-        showId: z.coerce.number(),
+        showId: z.string().cuid(),
       }),
     }),
     movieSingle: defineRoute("/films/[movieId]", {
       params: z.object({
-        movieId: z.coerce.number(),
+        movieId: z.string().cuid(),
       }),
     }),
     bookSingle: defineRoute("/books/[bookId]", {

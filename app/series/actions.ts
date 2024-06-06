@@ -8,18 +8,20 @@ import { z } from "zod";
 
 export const createShowAction = action(
   z.object({
-    showId: z.number(),
+    tmdbShowId: z.number(),
   }),
-  async ({ showId }) => {
-    await createShow(showId);
+  async ({ tmdbShowId }) => {
+    const id = await createShow(tmdbShowId);
 
     revalidatePath(routes.home());
+
+    return id;
   },
 );
 
 export const updateShowAction = action(
   z.object({
-    showId: z.number(),
+    showId: z.string().cuid(),
   }),
   async ({ showId }) => {
     await updateShow(showId);

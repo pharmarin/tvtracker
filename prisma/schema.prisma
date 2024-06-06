@@ -10,9 +10,10 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Genre {
-    id   Int     @id
-    name String?
+model MediaGenre {
+    id     String  @id @default(cuid())
+    tmdbId Int     @unique
+    name   String?
 
     createdAt DateTime  @default(now())
     updatedAt DateTime? @updatedAt
@@ -22,7 +23,8 @@ model Genre {
 }
 
 model Season {
-    id       Int       @id
+    id       String    @id @default(cuid())
+    tmdbId   Int       @unique
     name     String?
     number   Int?
     poster   String?
@@ -31,12 +33,13 @@ model Season {
     createdAt DateTime  @default(now())
     updatedAt DateTime? @updatedAt
 
-    show   Show? @relation(fields: [showId], references: [id], onDelete: Cascade)
-    showId Int?
+    show   Show?   @relation(fields: [showId], references: [id], onDelete: Cascade)
+    showId String?
 }
 
 model Episode {
-    id       Int       @id
+    id       String    @id @default(cuid())
+    tmdbId   Int       @unique
     number   Int?
     name     String?
     overview String?
@@ -48,13 +51,14 @@ model Episode {
     updatedAt DateTime? @updatedAt
 
     season   Season? @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-    seasonId Int?
+    seasonId String?
 }
 
 model Show {
-    id               Int      @id
+    id               String       @id @default(cuid())
+    tmdbId           Int          @unique
     name             String?
-    genres           Genre[]
+    genres           MediaGenre[]
     episodeCount     Int?
     seasonCount      Int?
     originalCountry  String?
@@ -71,9 +75,10 @@ model Show {
 }
 
 model Movie {
-    id               Int       @id
+    id               String       @id @default(cuid())
+    tmdbId           Int          @unique
     title            String?
-    genres           Genre[]
+    genres           MediaGenre[]
     originalLanguage String?
     originalTitle    String?
     overview         String?
@@ -86,7 +91,7 @@ model Movie {
     updatedAt DateTime? @updatedAt
 }
 
-model Author {
+model BookAuthor {
     id    String @id @default(cuid())
     name  String @unique
     books Book[]
@@ -114,7 +119,7 @@ model Book {
     id            String         @id @default(cuid())
     gapiId        String         @unique
     title         String?
-    authors       Author[]
+    authors       BookAuthor[]
     cover         String?
     categories    BookCategory[]
     description   String?

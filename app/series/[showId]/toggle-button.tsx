@@ -11,10 +11,10 @@ const ToggleButton = ({
   previousUnchecked,
   showId,
 }: {
-  episodeId: number;
+  episodeId: string;
   checked: boolean;
   previousUnchecked: boolean;
-  showId: number;
+  showId: string;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   return (

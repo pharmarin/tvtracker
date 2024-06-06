@@ -2,7 +2,7 @@
 
 import { search as searchAction } from "@/app/actions";
 import { createBookAction } from "@/app/books/actions";
-import { upsertMovie } from "@/app/films/actions";
+import { createMovieAction } from "@/app/films/actions";
 import { routes } from "@/app/safe-routes";
 import { createShowAction } from "@/app/series/actions";
 import { Button } from "@/components/ui/button";
@@ -43,8 +43,14 @@ const Search = ({
   showIds,
 }: {
   bookIds: { id: string; gapiId: string }[];
-  movieIds: number[];
-  showIds: number[];
+  movieIds: {
+    id: string;
+    tmdbId: number;
+  }[];
+  showIds: {
+    id: string;
+    tmdbId: number;
+  }[];
 }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -154,7 +160,9 @@ const Search = ({
                 }
 
                 const isAdding = addingShows.includes(show.id);
-                const isAdded = showIds.includes(show.id);
+                const isAdded = showIds
+                  .map((show) => show.tmdbId)
+                  .includes(show.id);
 
                 return (
                   <CommandItem
@@ -166,12 +174,27 @@ const Search = ({
                       }
                       if (!isAdded) {
                         setAddingShows((state) => [...state, show.id ?? 0]);
-                        await createShowAction({ showId: show.id ?? 0 });
+                        const createdShowId = await createShowAction({
+                          tmdbShowId: show.id ?? 0,
+                        });
                         setAddingShows((state) => [
                           ...state.filter((adding) => adding !== show.id),
                         ]);
+
+                        redirectTo(
+                          routes.showSingle({
+                            showId: createdShowId.data ?? "",
+                          }),
+                        );
+                      } else {
+                        redirectTo(
+                          routes.showSingle({
+                            showId:
+                              showIds.find((media) => media.tmdbId === show.id)
+                                ?.id ?? "",
+                          }),
+                        );
                       }
-                      redirectTo(routes.showSingle({ showId: show.id ?? 0 }));
                     }}
                     value={`${show.id}`}
                   >
@@ -187,7 +210,7 @@ const Search = ({
                     <CommandShortcut>
                       {isAdding ? (
                         <Loader2Icon className="animate-spin" />
-                      ) : showIds.includes(show.id) ? (
+                      ) : isAdded ? (
                         <ArrowRight />
                       ) : (
                         <PlusIcon />
@@ -206,7 +229,9 @@ const Search = ({
                 }
 
                 const isAdding = addingMovies.includes(movie.id);
-                const isAdded = movieIds.includes(movie.id);
+                const isAdded = movieIds
+                  .map((movie) => movie.tmdbId)
+                  .includes(movie.id);
 
                 return (
                   <CommandItem
@@ -218,14 +243,28 @@ const Search = ({
                       }
                       if (!isAdded) {
                         setAddingMovies((state) => [...state, movie.id ?? 0]);
-                        await upsertMovie({ movieId: movie.id ?? 0 });
+                        const createdMovieId = await createMovieAction({
+                          tmdbMovieId: movie.id ?? 0,
+                        });
                         setAddingMovies((state) => [
                           ...state.filter((adding) => adding !== movie.id),
                         ]);
+
+                        redirectTo(
+                          routes.movieSingle({
+                            movieId: createdMovieId.data ?? "",
+                          }),
+                        );
+                      } else {
+                        redirectTo(
+                          routes.movieSingle({
+                            movieId:
+                              movieIds.find(
+                                (media) => media.tmdbId === movie.id,
+                              )?.id ?? "",
+                          }),
+                        );
                       }
-                      redirectTo(
-                        routes.movieSingle({ movieId: movie.id ?? 0 }),
-                      );
                     }}
                     value={`${movie.id}`}
                   >
@@ -241,7 +280,7 @@ const Search = ({
                     <CommandShortcut>
                       {isAdding ? (
                         <Loader2Icon className="animate-spin" />
-                      ) : movieIds.includes(movie.id) ? (
+                      ) : isAdded ? (
                         <ArrowRight />
                       ) : (
                         <PlusIcon />
@@ -290,7 +329,7 @@ const Search = ({
                         redirectTo(
                           routes.bookSingle({
                             bookId:
-                              bookIds.find((book) => book.gapiId === book.id)
+                              bookIds.find((media) => media.gapiId === book.id)
                                 ?.id ?? "",
                           }),
                         );

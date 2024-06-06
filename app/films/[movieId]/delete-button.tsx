@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteMovie } from "@/app/films/[movieId]/actions";
+import { deleteMovieAction } from "@/app/films/[movieId]/actions";
 import { Button } from "@/components/ui/button";
 import { Loader2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
@@ -10,7 +10,7 @@ const DeleteButton = ({
   movieId,
 }: {
   movieName: string;
-  movieId: number;
+  movieId: string;
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -20,7 +20,7 @@ const DeleteButton = ({
       onClick={async () => {
         if (confirm(`Supprimer ${movieName} ?`)) {
           setIsDeleting(true);
-          await deleteMovie({ movieId });
+          await deleteMovieAction({ movieId });
           setIsDeleting(false);
         }
       }}

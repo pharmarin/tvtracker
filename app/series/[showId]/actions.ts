@@ -10,8 +10,8 @@ import { z } from "zod";
 export const setCheckedEpisode = action(
   z.object({
     checked: z.boolean(),
-    episodeId: z.number(),
-    showId: z.number(),
+    episodeId: z.string().cuid(),
+    showId: z.string().cuid(),
     checkPrevious: z.boolean(),
   }),
   async ({ checked, episodeId, showId, checkPrevious }) => {
@@ -54,7 +54,7 @@ export const setCheckedEpisode = action(
 );
 
 export const deleteShow = action(
-  z.object({ showId: z.number() }),
+  z.object({ showId: z.string().cuid() }),
   async ({ showId }) => {
     await db.show.delete({ where: { id: showId } });
 
@@ -64,7 +64,7 @@ export const deleteShow = action(
 );
 
 export const setDropShow = action(
-  z.object({ showId: z.number(), dropped: z.boolean() }),
+  z.object({ showId: z.string().cuid(), dropped: z.boolean() }),
   async ({ dropped, showId }) => {
     await db.show.update({
       where: { id: showId },

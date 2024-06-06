@@ -7,8 +7,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-export const deleteMovie = action(
-  z.object({ movieId: z.number() }),
+export const deleteMovieAction = action(
+  z.object({ movieId: z.string().cuid() }),
   async ({ movieId }) => {
     await db.movie.delete({ where: { id: movieId } });
 
@@ -17,8 +17,8 @@ export const deleteMovie = action(
   },
 );
 
-export const setCheckedMovie = action(
-  z.object({ checked: z.boolean(), movieId: z.number() }),
+export const setCheckedMovieAction = action(
+  z.object({ checked: z.boolean(), movieId: z.string().cuid() }),
   async ({ checked, movieId }) => {
     await db.movie.update({
       where: { id: movieId },

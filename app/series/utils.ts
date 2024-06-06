@@ -16,7 +16,7 @@ const tmdbShowToPrisma = async (
   }
 
   return {
-    id: show.id,
+    tmdbId: show.id,
     name: show.name,
     genres: {
       connectOrCreate: (show.genres ?? [])
@@ -25,8 +25,8 @@ const tmdbShowToPrisma = async (
             Boolean(genre.id) && Boolean(genre.name),
         )
         .map((genre) => ({
-          where: { id: genre.id },
-          create: genre,
+          where: { tmdbId: genre.id },
+          create: { tmdbId: genre.id, name: genre.name },
         })),
     },
     episodeCount: show.number_of_episodes,
@@ -42,21 +42,21 @@ const tmdbShowToPrisma = async (
 };
 
 const tmdbSeasonToPrisma = (
-  showId: number,
+  tmdbShowId: number,
   season: SimpleSeason & { id: number },
 ): Prisma.SeasonCreateInput => ({
-  id: season.id,
+  tmdbId: season.id,
   name: season.name,
   number: season.season_number,
   poster: season.poster_path,
-  show: { connect: { id: showId } },
+  show: { connect: { tmdbId: tmdbShowId } },
 });
 
 const tmdbEpisodeToPrisma = (
   season: Season,
   episode: SimpleEpisode & { id: number },
 ): Prisma.EpisodeCreateInput => ({
-  id: episode.id,
+  tmdbId: episode.id,
   name: episode.name,
   number: episode.episode_number,
   overview: episode.overview,
@@ -64,19 +64,22 @@ const tmdbEpisodeToPrisma = (
   season: { connect: season },
 });
 
-export const createShow = async (showId: number) => {
-  const show = await tmdb.tvInfo({ id: showId, language: "fr" });
+export const createShow = async (tmdbShowId: number) => {
+  const show = await tmdb.tvInfo({ id: tmdbShowId, language: "fr" });
   const data = await tmdbShowToPrisma(show);
-  await db.show.create({ data });
-  await upsertSeasonsAndEpisodes(data.id, show.seasons);
+  const { id } = await db.show.create({ data });
+  await upsertSeasonsAndEpisodes(id, show.id ?? 0, show.seasons);
+
+  return id;
 };
 
 export const upsertSeasonsAndEpisodes = async (
-  showId: number,
+  showId: string,
+  tmdbShowId: number,
   seasons?: SimpleSeason[],
 ) => {
   if (!seasons) {
-    const show = await tmdb.tvInfo(showId);
+    const show = await tmdb.tvInfo(tmdbShowId);
     seasons = show.seasons ?? [];
   }
 
@@ -84,15 +87,15 @@ export const upsertSeasonsAndEpisodes = async (
     (season): season is SimpleSeason & { id: number } => Boolean(season.id),
   )) {
     const seasonInfo = await tmdb.seasonInfo({
-      id: showId,
+      id: tmdbShowId,
       season_number: season.season_number ?? 0,
       language: "fr",
     });
 
-    const seasonData = tmdbSeasonToPrisma(showId, season);
+    const seasonData = tmdbSeasonToPrisma(tmdbShowId, season);
 
     const dbSeason = await db.season.upsert({
-      where: { id: season.id },
+      where: { tmdbId: season.id },
       create: seasonData,
       update: seasonData,
     });
@@ -107,7 +110,7 @@ export const upsertSeasonsAndEpisodes = async (
             const episodeData = tmdbEpisodeToPrisma(dbSeason, episode);
 
             return db.episode.upsert({
-              where: { id: episode.id },
+              where: { tmdbId: episode.id },
               create: episodeData,
               update: episodeData,
             });
@@ -118,21 +121,25 @@ export const upsertSeasonsAndEpisodes = async (
 };
 
 export const updateShow = async (
-  show: number | Pick<Show, "id" | "episodeCount" | "seasonCount">,
+  show: string | Pick<Show, "id" | "tmdbId" | "episodeCount" | "seasonCount">,
 ) => {
   const currentShow =
-    typeof show === "number"
+    typeof show === "string"
       ? await db.show.findFirstOrThrow({
           where: { id: show },
         })
       : show;
-  const tmdbShow = await tmdb.tvInfo(currentShow.id);
+  const tmdbShow = await tmdb.tvInfo(currentShow.tmdbId);
 
   if (
     currentShow.episodeCount !== tmdbShow.number_of_episodes ||
     currentShow.seasonCount !== tmdbShow.number_of_seasons
   ) {
-    await upsertSeasonsAndEpisodes(currentShow.id, tmdbShow.seasons);
+    await upsertSeasonsAndEpisodes(
+      currentShow.id,
+      currentShow.tmdbId,
+      tmdbShow.seasons,
+    );
     return true;
   } else {
     return false;
@@ -144,7 +151,13 @@ export const refreshShow = async (skip = 0) => {
     orderBy: { id: "asc" },
     take: 1,
     skip,
-    select: { id: true, name: true, episodeCount: true, seasonCount: true },
+    select: {
+      id: true,
+      tmdbId: true,
+      name: true,
+      episodeCount: true,
+      seasonCount: true,
+    },
   });
 
   if (!show) {

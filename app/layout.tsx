@@ -25,10 +25,10 @@ export default async function RootLayout({
     select: { id: true, gapiId: true },
   });
   const shows = await db.show.findMany({
-    select: { id: true },
+    select: { id: true, tmdbId: true },
   });
   const movies = await db.movie.findMany({
-    select: { id: true },
+    select: { id: true, tmdbId: true },
   });
 
   return (
@@ -46,11 +46,7 @@ export default async function RootLayout({
                   ont regardé
                 </h1>
               </Link>
-              <Search
-                bookIds={books}
-                movieIds={movies.map((media) => media.id)}
-                showIds={shows.map((media) => media.id)}
-              />
+              <Search bookIds={books} movieIds={movies} showIds={shows} />
             </div>
             {children}
           </div>
