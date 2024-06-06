@@ -1,10 +1,13 @@
 "use server";
 
+import type { Users } from "@/app/utils";
+import { CURRENT_USER_COOKIE } from "@/app/utils";
 import { db } from "@/server/db";
 import { action } from "@/server/safe-action";
 import tmdb from "@/server/tmdb";
 import { books } from "@googleapis/books";
 import type { MovieResult, TvResult } from "moviedb-promise";
+import { cookies } from "next/headers";
 import { z } from "zod";
 
 export const search = action(
@@ -54,3 +57,7 @@ export const search = action(
     };
   },
 );
+
+export const setUserCookieAction = async ({ user }: { user: Users }) => {
+  cookies().set(CURRENT_USER_COOKIE, user);
+};

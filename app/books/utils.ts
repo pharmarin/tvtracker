@@ -1,3 +1,4 @@
+import { Users } from "@/app/utils";
 import { db } from "@/server/db";
 import type { books_v1 } from "@googleapis/books";
 import { books } from "@googleapis/books";
@@ -40,4 +41,14 @@ export const createBook = async (bookId: string) => {
   const data = googleBookToPrisma(book.data);
 
   return await db.book.create({ data });
+};
+
+export const getUserColumn = (user: Users) => {
+  switch (user) {
+    case Users.Marion:
+      return "checked_marion";
+    case Users.Marin:
+    default:
+      return "checked_marin";
+  }
 };

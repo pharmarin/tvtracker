@@ -1,14 +1,17 @@
+import { CheckCircleIcon } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
 const Poster = ({
   badges,
+  checked,
   imageAlt,
   imageUrl,
   title,
   subtitle,
 }: {
   badges?: ReactNode;
+  checked?: boolean;
   imageAlt: string;
   imageUrl: string | null;
   title: string;
@@ -26,7 +29,16 @@ const Poster = ({
             width={500}
           />
         ) : (
-          <div className="bg-gray-200 w-20 h-16 rounded"></div>
+          <div className="bg-gray-200 w-20 h-16 rounded-lg"></div>
+        )}
+        {checked && (
+          <div
+            className={
+              "absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center rounded-lg bg-gray-300 bg-opacity-50"
+            }
+          >
+            <CheckCircleIcon className="w-16 h-16 text-green-900 text-opacity-50" />
+          </div>
         )}
         {badges && (
           <div className="absolute bottom-4 left-0 right-0 flex items-center flex-col text-center">

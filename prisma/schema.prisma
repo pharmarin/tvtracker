@@ -10,6 +10,11 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+enum User {
+    Marin
+    Marion
+}
+
 model MediaGenre {
     id     String  @id @default(cuid())
     tmdbId Int     @unique
@@ -126,6 +131,9 @@ model Book {
     publishedDate DateTime?
     serie         BookSerie?     @relation(fields: [bookSerieId], references: [id])
     serie_order   String?
+
+    checked_marin  Boolean @default(false)
+    checked_marion Boolean @default(false)
 
     createdAt DateTime  @default(now())
     updatedAt DateTime? @updatedAt

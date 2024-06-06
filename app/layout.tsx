@@ -1,10 +1,13 @@
+import CurrentUser from "@/app/current-user";
 import { routes } from "@/app/safe-routes";
 import Search from "@/app/search";
+import { CURRENT_USER_COOKIE, getCurrentUser } from "@/app/utils";
 import { db } from "@/server/db";
 import "@/styles/globals.css";
 import { HomeIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
 import Link from "next/link";
 
 const inter = Inter({
@@ -21,6 +24,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const currentUserCookie = cookies().get(CURRENT_USER_COOKIE);
+
   const books = await db.book.findMany({
     select: { id: true, gapiId: true },
   });
@@ -46,7 +51,12 @@ export default async function RootLayout({
                   ont regardé
                 </h1>
               </Link>
-              <Search bookIds={books} movieIds={movies} showIds={shows} />
+              <div className="flex items-center">
+                <CurrentUser
+                  currentUserCookie={getCurrentUser(currentUserCookie?.value)}
+                />
+                <Search bookIds={books} movieIds={movies} showIds={shows} />
+              </div>
             </div>
             {children}
           </div>
