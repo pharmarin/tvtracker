@@ -134,6 +134,8 @@ model Book {
 
     checked_marin  Boolean @default(false)
     checked_marion Boolean @default(false)
+    planned_marin  Boolean @default(false)
+    planned_marion Boolean @default(false)
 
     createdAt DateTime  @default(now())
     updatedAt DateTime? @updatedAt

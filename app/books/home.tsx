@@ -1,4 +1,3 @@
-import { getUserColumn } from "@/app/books/utils";
 import { routes } from "@/app/safe-routes";
 import { CURRENT_USER_COOKIE, getCurrentUser } from "@/app/utils";
 import Grid from "@/components/grid";
@@ -17,7 +16,7 @@ const BooksHome = async () => {
     include: {
       books: {
         where: {
-          [getUserColumn(currentUser.user)]: true,
+          [currentUser.checkedColumn]: true,
         },
         include: { authors: true },
       },
@@ -25,7 +24,8 @@ const BooksHome = async () => {
   });
   const toReadBooks = await db.book.findMany({
     where: {
-      [getUserColumn(currentUser.user)]: false,
+      [currentUser.plannedColumn]: true,
+      [currentUser.checkedColumn]: false,
     },
     orderBy: { createdAt: "desc" },
     include: { authors: true },
@@ -48,16 +48,19 @@ const BooksHome = async () => {
       {readBooksByAuthor.length > 0 && (
         <div>
           <h2 className="font-semibold text-3xl mb-4">Livres lus</h2>
-          {readBooksByAuthor.map((author) => (
-            <div key={author.id} className="mb-4">
-              <h3 className="italic text-xl mb-2">{author.name}</h3>
-              <Grid>
-                {author.books.map((book) => (
-                  <BookPoster key={book.id} book={book} checked={true} />
-                ))}
-              </Grid>
-            </div>
-          ))}
+          {readBooksByAuthor.map(
+            (author) =>
+              author.books.length > 0 && (
+                <div key={author.id} className="mb-4">
+                  <h3 className="italic text-xl mb-2">{author.name}</h3>
+                  <Grid>
+                    {author.books.map((book) => (
+                      <BookPoster key={book.id} book={book} checked={true} />
+                    ))}
+                  </Grid>
+                </div>
+              ),
+          )}
         </div>
       )}
     </div>
