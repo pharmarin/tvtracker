@@ -21,6 +21,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const books = await db.book.findMany({
+    select: { id: true, gapiId: true },
+  });
   const shows = await db.show.findMany({
     select: { id: true },
   });
@@ -44,6 +47,7 @@ export default async function RootLayout({
                 </h1>
               </Link>
               <Search
+                bookIds={books}
                 movieIds={movies.map((media) => media.id)}
                 showIds={shows.map((media) => media.id)}
               />

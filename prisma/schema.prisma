@@ -14,12 +14,11 @@ model Genre {
     id   Int     @id
     name String?
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
 
-    shows   Show[]
-    movie   Movie? @relation(fields: [movieId], references: [id])
-    movieId Int?
+    shows Show[]
+    movie Movie[]
 }
 
 model Season {
@@ -29,14 +28,12 @@ model Season {
     poster   String?
     episodes Episode[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
 
     show   Show? @relation(fields: [showId], references: [id], onDelete: Cascade)
     showId Int?
 }
-
-
 
 model Episode {
     id       Int       @id
@@ -47,8 +44,8 @@ model Episode {
 
     checked Boolean @default(false)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
 
     season   Season? @relation(fields: [seasonId], references: [id], onDelete: Cascade)
     seasonId Int?
@@ -69,8 +66,8 @@ model Show {
 
     dropped Boolean?
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
 }
 
 model Movie {
@@ -85,6 +82,48 @@ model Movie {
 
     checked Boolean @default(false)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+}
+
+model Author {
+    id    String @id @default(cuid())
+    name  String @unique
+    books Book[]
+}
+
+model BookCategory {
+    id    String @id @default(cuid())
+    name  String @unique
+    books Book[]
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+}
+
+model BookSerie {
+    id    String @id @default(cuid())
+    name  String @unique
+    books Book[]
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+}
+
+model Book {
+    id            String         @id @default(cuid())
+    gapiId        String         @unique
+    title         String?
+    authors       Author[]
+    cover         String?
+    categories    BookCategory[]
+    description   String?
+    publishedDate DateTime?
+    serie         BookSerie?     @relation(fields: [bookSerieId], references: [id])
+    serie_order   String?
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    bookSerieId String?
 }

@@ -14,6 +14,9 @@ export const { routes, useSafeParams, useSafeSearchParams } =
         movieId: z.coerce.number(),
       }),
     }),
+    bookSingle: defineRoute("/books/[bookId]", {
+      params: z.object({ bookId: z.string().cuid() }),
+    }),
     jobs: defineRoute("/api/jobs", {
       search: z.object({
         job: z.literal("REFRESH_SHOWS").optional(),

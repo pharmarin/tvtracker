@@ -1,6 +1,7 @@
 "use client";
 
 import { search as searchAction } from "@/app/actions";
+import { createBookAction } from "@/app/books/actions";
 import { upsertMovie } from "@/app/films/actions";
 import { routes } from "@/app/safe-routes";
 import { createShowAction } from "@/app/series/actions";
@@ -37,9 +38,11 @@ const SearchImage = ({ alt, src }: { alt: string; src?: string }) =>
   );
 
 const Search = ({
+  bookIds,
   movieIds,
   showIds,
 }: {
+  bookIds: { id: string; gapiId: string }[];
   movieIds: number[];
   showIds: number[];
 }) => {
@@ -48,6 +51,7 @@ const Search = ({
   const [search, setSearch] = useState("");
   const [addingShows, setAddingShows] = useState<number[]>([]);
   const [addingMovies, setAddingMovies] = useState<number[]>([]);
+  const [addingBooks, setAddingBooks] = useState<string[]>([]);
   const [{ data, isLoading: isSearching, reset }, execute] =
     useAsyncAction(searchAction);
 
@@ -255,8 +259,10 @@ const Search = ({
                   return null;
                 }
 
-                const isAdding = false; // addingMovies.includes(movie.id);
-                const isAdded = false; // movieIds.includes(movie.id);
+                const isAdding = addingBooks.includes(book.id);
+                const isAdded = bookIds
+                  .map((media) => media.gapiId)
+                  .includes(book.id);
 
                 return (
                   <CommandItem
@@ -267,15 +273,28 @@ const Search = ({
                         return;
                       }
                       if (!isAdded) {
-                        /* setAddingMovies((state) => [...state, movie.id ?? 0]);
-                        await upsertMovie({ movieId: movie.id ?? 0 });
-                        setAddingMovies((state) => [
-                          ...state.filter((adding) => adding !== movie.id),
-                        ]); */
+                        setAddingBooks((state) => [...state, book.id ?? ""]);
+                        const createdBookId = await createBookAction({
+                          bookId: book.id ?? "",
+                        });
+                        setAddingBooks((state) => [
+                          ...state.filter((adding) => adding !== book.id),
+                        ]);
+
+                        redirectTo(
+                          routes.bookSingle({
+                            bookId: createdBookId.data ?? "",
+                          }),
+                        );
+                      } else {
+                        redirectTo(
+                          routes.bookSingle({
+                            bookId:
+                              bookIds.find((book) => book.gapiId === book.id)
+                                ?.id ?? "",
+                          }),
+                        );
                       }
-                      /* redirectTo(
-                        routes.movieSingle({ movieId: movie.id ?? 0 }),
-                      ); */
                     }}
                     value={`${book.id}`}
                   >
@@ -292,13 +311,13 @@ const Search = ({
                       </span>
                     </div>
                     <CommandShortcut>
-                      {/* isAdding ? (
+                      {isAdding ? (
                         <Loader2Icon className="animate-spin" />
-                      ) : movieIds.includes(book.id) ? (
+                      ) : isAdded ? (
                         <ArrowRight />
                       ) : (
                         <PlusIcon />
-                      ) */}
+                      )}
                     </CommandShortcut>
                   </CommandItem>
                 );

@@ -19,7 +19,7 @@ const config = {
       {
         protocol: "http",
         hostname: "books.google.com",
-        pathname: "/books/content/**",
+        pathname: "/**/content/**",
       },
     ],
   },
