@@ -38,7 +38,7 @@ const MovieHome = async () => {
         {checkedMovies.length > 0 ? (
           <Grid>
             {checkedMovies.map((movie) => (
-              <MoviePoster key={movie.id} movie={movie} />
+              <MoviePoster key={movie.id} checked movie={movie} />
             ))}
           </Grid>
         ) : (
@@ -49,7 +49,13 @@ const MovieHome = async () => {
   );
 };
 
-export const MoviePoster = ({ movie }: { movie: Movie }) => {
+export const MoviePoster = ({
+  checked,
+  movie,
+}: {
+  checked?: boolean;
+  movie: Movie;
+}) => {
   return (
     <Link
       key={movie.id}
@@ -59,6 +65,7 @@ export const MoviePoster = ({ movie }: { movie: Movie }) => {
       })}
     >
       <Poster
+        checked={checked}
         imageAlt={`${movie.title} poster`}
         imageUrl={`https://image.tmdb.org/t/p/w500${movie.poster}`}
         title={movie.title ?? ""}

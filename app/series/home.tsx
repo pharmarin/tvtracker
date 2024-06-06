@@ -95,7 +95,7 @@ const ShowHome = async () => {
           <h3 className="font-semibold text-2xl mb-4">Séries à venir</h3>
           <Grid className="grid-cols-4 sm:grid-cols-6">
             {toComeShow.map(async (show) => (
-              <ShowPoster key={show.id} show={show} />
+              <ShowPoster key={show.id} checked show={show} />
             ))}
           </Grid>
         </div>
@@ -105,7 +105,7 @@ const ShowHome = async () => {
           <h3 className="font-semibold text-2xl mb-4">Séries terminées</h3>
           <Grid className="grid-cols-4 sm:grid-cols-6">
             {terminatedShows.map(async (show) => (
-              <ShowPoster key={show.id} show={show} />
+              <ShowPoster key={show.id} checked show={show} />
             ))}
           </Grid>
         </div>
@@ -125,8 +125,10 @@ const ShowHome = async () => {
 };
 
 const ShowPoster = async ({
+  checked,
   show,
 }: {
+  checked?: boolean;
   show: Pick<
     Show,
     "id" | "name" | "status" | "poster" | "seasonCount" | "episodeCount"
@@ -159,6 +161,7 @@ const ShowPoster = async ({
             </Badge>
           </>
         }
+        checked={checked}
         imageAlt={`${show.name} poster`}
         imageUrl={`https://image.tmdb.org/t/p/w500${show.poster}`}
         title={show.name ?? ""}
