@@ -1,4 +1,4 @@
-import { env } from "env";
+import { env } from "@/env";
 import { MovieDb } from "moviedb-promise";
 
 const apiKey = env.TMDB_SECRET;
