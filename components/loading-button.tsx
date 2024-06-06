@@ -1,7 +1,7 @@
 "use client";
 
-import type { ButtonProps } from "components/ui/button";
-import { Button } from "components/ui/button";
+import type { ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Loader2Icon } from "lucide-react";
 import { useFormStatus } from "react-dom";
 

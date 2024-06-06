@@ -1,11 +1,11 @@
+import { routes } from "@/app/safe-routes";
+import Search from "@/app/search";
+import { db } from "@/server/db";
 import "@/styles/globals.css";
-import { routes } from "app/safe-routes";
-import Search from "app/search";
 import { HomeIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
-import { db } from "server/db";
 
 const inter = Inter({
   subsets: ["latin"],

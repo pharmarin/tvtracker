@@ -1,12 +1,12 @@
-import { upsertMovie } from "app/actions";
-import { setCheckedMovie } from "app/films/[movieId]/actions";
-import DeleteButton from "app/films/[movieId]/delete-button";
-import { routes } from "app/safe-routes";
-import LoadingButton from "components/loading-button";
+import { setCheckedMovie } from "@/app/films/[movieId]/actions";
+import DeleteButton from "@/app/films/[movieId]/delete-button";
+import { upsertMovie } from "@/app/films/actions";
+import { routes } from "@/app/safe-routes";
+import LoadingButton from "@/components/loading-button";
+import { db } from "@/server/db";
 import { CheckCircle2Icon, RefreshCcwIcon, XCircleIcon } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { db } from "server/db";
 
 const MoviePage = async ({ params }: { params: unknown }) => {
   try {

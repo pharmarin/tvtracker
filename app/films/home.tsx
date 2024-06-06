@@ -1,9 +1,9 @@
+import { routes } from "@/app/safe-routes";
+import Grid from "@/components/grid";
+import Poster from "@/components/poster";
+import { db } from "@/server/db";
 import type { Movie } from "@prisma/client";
-import { routes } from "app/safe-routes";
-import Grid from "components/grid";
-import Poster from "components/poster";
 import Link from "next/link";
-import { db } from "server/db";
 
 const MovieHome = async () => {
   const checkedMovies = await db.movie.findMany({

@@ -1,6 +1,6 @@
-import MovieHome from "app/films/home";
-import ShowHome from "app/series/home";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "components/ui/tabs";
+import MovieHome from "@/app/films/home";
+import ShowHome from "@/app/series/home";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const HomePage = async () => {
   return (

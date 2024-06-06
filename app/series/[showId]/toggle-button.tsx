@@ -1,7 +1,7 @@
 "use client";
 
-import { setCheckedEpisode } from "app/series/[showId]/actions";
-import { Button } from "components/ui/button";
+import { setCheckedEpisode } from "@/app/series/[showId]/actions";
+import { Button } from "@/components/ui/button";
 import { CheckCircle2Icon, CircleIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 

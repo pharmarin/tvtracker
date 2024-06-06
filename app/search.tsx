@@ -1,10 +1,10 @@
 "use client";
 
+import { search as searchAction } from "@/app/actions";
+import { upsertMovie } from "@/app/films/actions";
+import { routes } from "@/app/safe-routes";
 import { createShowAction } from "@/app/series/actions";
-import { search as searchAction, upsertMovie } from "app/actions";
-import { routes } from "app/safe-routes";
-import { CommandLoading } from "cmdk";
-import { Button } from "components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -13,8 +13,9 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-} from "components/ui/command";
-import { useAsyncAction } from "lib/use-async-hook";
+} from "@/components/ui/command";
+import { useAsyncAction } from "@/lib/use-async-hook";
+import { CommandLoading } from "cmdk";
 import { debounce } from "lodash-es";
 import { ArrowRight, Loader2Icon, PlusIcon, SearchIcon } from "lucide-react";
 import type { Route } from "next";

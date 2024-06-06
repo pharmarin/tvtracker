@@ -1,20 +1,20 @@
+import { routes } from "@/app/safe-routes";
+import { setDropShow } from "@/app/series/[showId]/actions";
+import DeleteButton from "@/app/series/[showId]/delete-button";
+import ToggleButton from "@/app/series/[showId]/toggle-button";
 import { updateShowAction } from "@/app/series/actions";
-import { routes } from "app/safe-routes";
-import { setDropShow } from "app/series/[showId]/actions";
-import DeleteButton from "app/series/[showId]/delete-button";
-import ToggleButton from "app/series/[showId]/toggle-button";
-import LoadingButton from "components/loading-button";
+import LoadingButton from "@/components/loading-button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "components/ui/accordion";
+} from "@/components/ui/accordion";
+import { db } from "@/server/db";
+import { switchShowStatus } from "@/server/tmdb";
 import { HandIcon, HandshakeIcon, RefreshCcwIcon } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { db } from "server/db";
-import { switchShowStatus } from "server/tmdb";
 
 const ShowPage = async ({ params }: { params: unknown }) => {
   try {

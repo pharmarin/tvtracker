@@ -42,7 +42,7 @@ export function useAsyncAction<S extends Schema, Args extends z.input<S>, Data>(
           if (response.serverError) {
             setIsError(true);
             throw new Error(
-              response.serverError ?? "Server action failed without error",
+              response.serverError ?? "@/server action failed without error",
             );
           }
 

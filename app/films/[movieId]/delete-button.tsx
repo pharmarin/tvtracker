@@ -1,7 +1,7 @@
 "use client";
 
-import { deleteMovie } from "app/films/[movieId]/actions";
-import { Button } from "components/ui/button";
+import { deleteMovie } from "@/app/films/[movieId]/actions";
+import { Button } from "@/components/ui/button";
 import { Loader2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 

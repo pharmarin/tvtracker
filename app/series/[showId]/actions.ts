@@ -1,10 +1,10 @@
 "use server";
 
-import { routes } from "app/safe-routes";
+import { routes } from "@/app/safe-routes";
+import { db } from "@/server/db";
+import { action } from "@/server/safe-action";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { db } from "server/db";
-import { action } from "server/safe-action";
 import { z } from "zod";
 
 export const setCheckedEpisode = action(
@@ -59,7 +59,6 @@ export const deleteShow = action(
     await db.show.delete({ where: { id: showId } });
 
     revalidatePath(routes.home());
-
     redirect(routes.home());
   },
 );
@@ -73,7 +72,6 @@ export const setDropShow = action(
     });
 
     revalidatePath(routes.home());
-
     redirect(routes.home());
   },
 );

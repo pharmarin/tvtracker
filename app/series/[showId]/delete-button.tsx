@@ -1,7 +1,7 @@
 "use client";
 
-import { deleteShow } from "app/series/[showId]/actions";
-import { Button } from "components/ui/button";
+import { deleteShow } from "@/app/series/[showId]/actions";
+import { Button } from "@/components/ui/button";
 import { Loader2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 

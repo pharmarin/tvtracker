@@ -1,11 +1,11 @@
+import { routes } from "@/app/safe-routes";
+import Grid from "@/components/grid";
+import Poster from "@/components/poster";
+import { Badge } from "@/components/ui/badge";
+import { db } from "@/server/db";
+import { switchShowStatus } from "@/server/tmdb";
 import type { Show } from "@prisma/client";
-import { routes } from "app/safe-routes";
-import Grid from "components/grid";
-import Poster from "components/poster";
-import { Badge } from "components/ui/badge";
 import Link from "next/link";
-import { db } from "server/db";
-import { switchShowStatus } from "server/tmdb";
 
 const ShowHome = async () => {
   const currentShows = await db.show.findMany({
@@ -27,11 +27,14 @@ const ShowHome = async () => {
       seasonCount: true,
       episodeCount: true,
     },
-    orderBy: [{
-      updatedAt: "desc",
-    }, {
-      createdAt: "asc",
-    }],
+    orderBy: [
+      {
+        updatedAt: "desc",
+      },
+      {
+        createdAt: "asc",
+      },
+    ],
   });
   const toComeShow = await db.show.findMany({
     where: {
