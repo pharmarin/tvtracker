@@ -23,6 +23,19 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
+const SearchImage = ({ alt, src }: { alt: string; src?: string }) =>
+  src ? (
+    <Image
+      alt={alt}
+      className="shrink-0 w-12 h-fit mr-4"
+      src={src}
+      height={500}
+      width={500}
+    />
+  ) : (
+    <div className="shrink-0 w-12 h-16 mr-4 bg-gray-200 rounded"></div>
+  );
+
 const Search = ({
   movieIds,
   showIds,
@@ -83,16 +96,13 @@ const Search = ({
                   }
                   value={`${show.id}`}
                 >
-                  <Image
+                  <SearchImage
                     alt={`${show.name} poster`}
-                    className="w-12 h-fit mr-4"
                     src={
                       show.poster
                         ? `https://image.tmdb.org/t/p/w500${show.poster}`
-                        : ""
+                        : undefined
                     }
-                    height={500}
-                    width={500}
                   />
                   <span className="font-bold">{show.name}</span>
                   <CommandShortcut>
@@ -116,16 +126,13 @@ const Search = ({
                   }
                   value={`${movie.id}`}
                 >
-                  <Image
+                  <SearchImage
                     alt={`${movie.title} poster`}
-                    className="w-12 h-fit mr-4"
                     src={
                       movie.poster
                         ? `https://image.tmdb.org/t/p/w500${movie.poster}`
-                        : ""
+                        : undefined
                     }
-                    height={500}
-                    width={500}
                   />
                   <span className="font-bold">{movie.title}</span>
                   <CommandShortcut>
@@ -164,16 +171,13 @@ const Search = ({
                     }}
                     value={`${show.id}`}
                   >
-                    <Image
+                    <SearchImage
                       alt={`${show.name} poster`}
-                      className="w-12 h-fit mr-4"
                       src={
                         show.poster_path
                           ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
-                          : ""
+                          : undefined
                       }
-                      height={500}
-                      width={500}
                     />
                     <span className="font-bold">{show.name}</span>
                     <CommandShortcut>
@@ -221,16 +225,13 @@ const Search = ({
                     }}
                     value={`${movie.id}`}
                   >
-                    <Image
+                    <SearchImage
                       alt={`${movie.title} poster`}
-                      className="w-12 h-fit mr-4"
                       src={
                         movie.poster_path
                           ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                          : ""
+                          : undefined
                       }
-                      height={500}
-                      width={500}
                     />
                     <span className="font-bold">{movie.title}</span>
                     <CommandShortcut>
@@ -241,6 +242,63 @@ const Search = ({
                       ) : (
                         <PlusIcon />
                       )}
+                    </CommandShortcut>
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          )}
+          {data?.apiBooks && data.apiBooks.length > 0 && (
+            <CommandGroup heading="Livres Google API">
+              {data.apiBooks.map((book) => {
+                if (!book.id) {
+                  return null;
+                }
+
+                const isAdding = false; // addingMovies.includes(movie.id);
+                const isAdded = false; // movieIds.includes(movie.id);
+
+                return (
+                  <CommandItem
+                    key={book.id}
+                    disabled={isAdding}
+                    onSelect={async () => {
+                      if (isAdding) {
+                        return;
+                      }
+                      if (!isAdded) {
+                        /* setAddingMovies((state) => [...state, movie.id ?? 0]);
+                        await upsertMovie({ movieId: movie.id ?? 0 });
+                        setAddingMovies((state) => [
+                          ...state.filter((adding) => adding !== movie.id),
+                        ]); */
+                      }
+                      /* redirectTo(
+                        routes.movieSingle({ movieId: movie.id ?? 0 }),
+                      ); */
+                    }}
+                    value={`${book.id}`}
+                  >
+                    <SearchImage
+                      alt={`${book.volumeInfo?.title} poster`}
+                      src={book.volumeInfo?.imageLinks?.thumbnail}
+                    />
+                    <div className="flex flex-col">
+                      <span className="font-bold line-clamp-1">
+                        {book.volumeInfo?.title}
+                      </span>
+                      <span className="italic">
+                        {book.volumeInfo?.authors?.join(", ")}
+                      </span>
+                    </div>
+                    <CommandShortcut>
+                      {/* isAdding ? (
+                        <Loader2Icon className="animate-spin" />
+                      ) : movieIds.includes(book.id) ? (
+                        <ArrowRight />
+                      ) : (
+                        <PlusIcon />
+                      ) */}
                     </CommandShortcut>
                   </CommandItem>
                 );

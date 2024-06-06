@@ -3,13 +3,7 @@
 import { db } from "@/server/db";
 import { action } from "@/server/safe-action";
 import tmdb from "@/server/tmdb";
-import type { Prisma } from "@prisma/client";
-import { routes } from "app/safe-routes";
-import type { Genre, MovieResult, TvResult } from "moviedb-promise";
-import { revalidatePath } from "next/cache";
-import { db } from "server/db";
-import { action } from "server/safe-action";
-import tmdb from "server/tmdb";
+import { books } from "@googleapis/books";
 import type { MovieResult, TvResult } from "moviedb-promise";
 import { z } from "zod";
 
@@ -21,6 +15,11 @@ export const search = action(
     const tmdbResults = await tmdb
       .searchMulti({ query, language: "fr" })
       .then((response) => response?.results ?? []);
+
+    const apiBooks = await books("v1").volumes.list({
+      q: query,
+    });
+
     const myResults = await db.$transaction([
       db.show.findMany({
         where: {
@@ -51,6 +50,7 @@ export const search = action(
       tmdbMovies: tmdbResults.filter(
         (result): result is MovieResult => result.media_type === "movie",
       ),
+      apiBooks: apiBooks.data.items ?? [],
     };
   },
 );

@@ -14,8 +14,12 @@ const config = {
       {
         protocol: "https",
         hostname: "image.tmdb.org",
-        port: "",
         pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "books.google.com",
+        pathname: "/books/content/**",
       },
     ],
   },
