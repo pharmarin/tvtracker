@@ -5,7 +5,7 @@ import { CURRENT_USER_COOKIE, getCurrentUser } from "@/app/utils";
 import { db } from "@/server/db";
 import "@/styles/globals.css";
 import { HomeIcon } from "lucide-react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -17,6 +17,16 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "TV Tracker",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "TV Tracker",
+    // startUpImage: [],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "red",
 };
 
 export default async function RootLayout({
