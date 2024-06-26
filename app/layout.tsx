@@ -48,6 +48,8 @@ export default async function RootLayout({
 
   return (
     <html lang="fr">
+      <link rel="icon" href="/icons/favicon.ico" sizes="any" />
+      <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       <body className={`font-sans ${inter.variable}`}>
         <div className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
           <div className="container mt-4 flex flex-col items-center justify-center gap-4 p-4">

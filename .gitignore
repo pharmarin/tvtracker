@@ -40,3 +40,10 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# Serwist
+**/public/serwist**
+**/public/sw**
+**/public/worker**
+**/public/fallback**
+**/public/precache**
